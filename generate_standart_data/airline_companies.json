@@ -1,0 +1,62 @@
+{
+    "Delta Air Lines": {
+        "country": "United States",
+        "iata_code": "DL"
+    },
+    "American Airlines": {
+        "country": "United States",
+        "iata_code": "AA"
+    },
+    "British Airways": {
+        "country": "United Kingdom",
+        "iata_code": "BA"
+    },
+    "Lufthansa": {
+        "country": "Germany",
+        "iata_code": "LH"
+    },
+    "Air France": {
+        "country": "France",
+        "iata_code": "AF"
+    },
+    "Emirates": {
+        "country": "United Arab Emirates",
+        "iata_code": "EK"
+    },
+    "Singapore Airlines": {
+        "country": "Singapore",
+        "iata_code": "SQ"
+    },
+    "Qatar Airways": {
+        "country": "Qatar",
+        "iata_code": "QR"
+    },
+    "Cathay Pacific": {
+        "country": "Hong Kong",
+        "iata_code": "CX"
+    },
+    "Japan Airlines": {
+        "country": "Japan",
+        "iata_code": "JL"
+    },
+    "Korean Air": {
+        "country": "South Korea",
+        "iata_code": "KE"
+    },
+    "United Airlines": {
+        "country": "United States",
+        "iata_code": "UA"
+    },
+    "Alaska Airlines": {
+        "country": "United States",
+        "iata_code": "AS"
+    },
+    "Turkish Airlines": {
+        "country": "Turkey",
+        "iata_code": "TK"
+    },
+    "Qantas": {
+        "country": "Australia",
+        "iata_code": "QF"
+    }
+}

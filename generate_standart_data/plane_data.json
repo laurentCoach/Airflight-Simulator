@@ -1,0 +1,275 @@
+{
+    "A380": {
+        "model": "Airbus A380",
+        "manufacturer": "Airbus",
+        "range_km": 15200,
+        "capacity": 555,
+        "cruising_speed_kph": 900
+    },
+    "747": {
+        "model": "Boeing 747-8",
+        "manufacturer": "Boeing",
+        "range_km": 13600,
+        "capacity": 410,
+        "cruising_speed_kph": 914
+    },
+    "787": {
+        "model": "Boeing 787 Dreamliner",
+        "manufacturer": "Boeing",
+        "range_km": 14800,
+        "capacity": 296,
+        "cruising_speed_kph": 913
+    },
+    "737": {
+        "model": "Boeing 737 MAX 8",
+        "manufacturer": "Boeing",
+        "range_km": 6435,
+        "capacity": 210,
+        "cruising_speed_kph": 842
+    },
+    "320": {
+        "model": "Airbus A320neo",
+        "manufacturer": "Airbus",
+        "range_km": 6100,
+        "capacity": 150,
+        "cruising_speed_kph": 828
+    },
+    "330": {
+        "model": "Airbus A330-300",
+        "manufacturer": "Airbus",
+        "range_km": 11600,
+        "capacity": 277,
+        "cruising_speed_kph": 870
+    },
+    "350": {
+        "model": "Airbus A350-900",
+        "manufacturer": "Airbus",
+        "range_km": 15000,
+        "capacity": 315,
+        "cruising_speed_kph": 903
+    },
+    "78710": {
+        "model": "Boeing 787-10",
+        "manufacturer": "Boeing",
+        "range_km": 11100,
+        "capacity": 318,
+        "cruising_speed_kph": 913
+    },
+    "777": {
+        "model": "Boeing 777-200LR",
+        "manufacturer": "Boeing",
+        "range_km": 14800,
+        "capacity": 317,
+        "cruising_speed_kph": 905
+    },
+    "E190": {
+        "model": "Embraer E190",
+        "manufacturer": "Embraer",
+        "range_km": 5556,
+        "capacity": 100,
+        "cruising_speed_kph": 870
+    },
+    "CRJ900": {
+        "model": "Bombardier CRJ900",
+        "manufacturer": "Bombardier",
+        "range_km": 3000,
+        "capacity": 90,
+        "cruising_speed_kph": 835
+    },
+    "CSeries": {
+        "model": "Airbus A220",
+        "manufacturer": "Airbus",
+        "range_km": 6111,
+        "capacity": 150,
+        "cruising_speed_kph": 871
+    },
+    "F50": {
+        "model": "Fokker 50",
+        "manufacturer": "Fokker",
+        "range_km": 1000,
+        "capacity": 50,
+        "cruising_speed_kph": 550
+    },
+    "Hawker800": {
+        "model": "Hawker 800",
+        "manufacturer": "Hawker",
+        "range_km": 4600,
+        "capacity": 8,
+        "cruising_speed_kph": 850
+    },
+    "G550": {
+        "model": "Gulfstream G550",
+        "manufacturer": "Gulfstream Aerospace",
+        "range_km": 12000,
+        "capacity": 16,
+        "cruising_speed_kph": 900
+    },
+    "A321": {
+        "model": "Airbus A321neo",
+        "manufacturer": "Airbus",
+        "range_km": 7400,
+        "capacity": 244,
+        "cruising_speed_kph": 828
+    },
+    "A310": {
+        "model": "Airbus A310",
+        "manufacturer": "Airbus",
+        "range_km": 9250,
+        "capacity": 280,
+        "cruising_speed_kph": 825
+    },
+    "737800": {
+        "model": "Boeing 737-800",
+        "manufacturer": "Boeing",
+        "range_km": 5440,
+        "capacity": 189,
+        "cruising_speed_kph": 839
+    },
+    "737900": {
+        "model": "Boeing 737-900",
+        "manufacturer": "Boeing",
+        "range_km": 5735,
+        "capacity": 220,
+        "cruising_speed_kph": 839
+    },
+    "E175": {
+        "model": "Embraer E175",
+        "manufacturer": "Embraer",
+        "range_km": 4444,
+        "capacity": 76,
+        "cruising_speed_kph": 828
+    },
+    "A319": {
+        "model": "Airbus A319",
+        "manufacturer": "Airbus",
+        "range_km": 6700,
+        "capacity": 156,
+        "cruising_speed_kph": 828
+    },
+    "CRJ1000": {
+        "model": "Bombardier CRJ1000",
+        "manufacturer": "Bombardier",
+        "range_km": 3000,
+        "capacity": 104,
+        "cruising_speed_kph": 835
+    },
+    "F70": {
+        "model": "Fokker 70",
+        "manufacturer": "Fokker",
+        "range_km": 2200,
+        "capacity": 80,
+        "cruising_speed_kph": 730
+    },
+    "G450": {
+        "model": "Gulfstream G450",
+        "manufacturer": "Gulfstream Aerospace",
+        "range_km": 8000,
+        "capacity": 14,
+        "cruising_speed_kph": 850
+    },
+    "Global7500": {
+        "model": "Bombardier Global 7500",
+        "manufacturer": "Bombardier",
+        "range_km": 14000,
+        "capacity": 19,
+        "cruising_speed_kph": 920
+    },
+    "BBJ": {
+        "model": "Boeing Business Jet",
+        "manufacturer": "Boeing",
+        "range_km": 10500,
+        "capacity": 25,
+        "cruising_speed_kph": 850
+    },
+    "KingAir350": {
+        "model": "Beechcraft King Air 350",
+        "manufacturer": "Beechcraft",
+        "range_km": 2880,
+        "capacity": 11,
+        "cruising_speed_kph": 500
+    },
+    "CitationX": {
+        "model": "Cessna Citation X",
+        "manufacturer": "Cessna",
+        "range_km": 5926,
+        "capacity": 8,
+        "cruising_speed_kph": 950
+    },
+    "Falcon7X": {
+        "model": "Dassault Falcon 7X",
+        "manufacturer": "Dassault",
+        "range_km": 11112,
+        "capacity": 14,
+        "cruising_speed_kph": 900
+    },
+    "Phenom300": {
+        "model": "Embraer Phenom 300",
+        "manufacturer": "Embraer",
+        "range_km": 3461,
+        "capacity": 9,
+        "cruising_speed_kph": 833
+    },
+    "A330Neo": {
+        "model": "Airbus A330neo",
+        "manufacturer": "Airbus",
+        "range_km": 12200,
+        "capacity": 287,
+        "cruising_speed_kph": 871
+    },
+    "A340": {
+        "model": "Airbus A340-600",
+        "manufacturer": "Airbus",
+        "range_km": 14800,
+        "capacity": 359,
+        "cruising_speed_kph": 871
+    },
+    "747400": {
+        "model": "Boeing 747-400",
+        "manufacturer": "Boeing",
+        "range_km": 12000,
+        "capacity": 416,
+        "cruising_speed_kph": 907
+    },
+    "CRJ700": {
+        "model": "Bombardier CRJ700",
+        "manufacturer": "Bombardier",
+        "range_km": 2900,
+        "capacity": 70,
+        "cruising_speed_kph": 835
+    },
+    "SuperJet100": {
+        "model": "Sukhoi Superjet 100",
+        "manufacturer": "Sukhoi",
+        "range_km": 3000,
+        "capacity": 100,
+        "cruising_speed_kph": 800
+    },
+    "TupolevTu204": {
+        "model": "Tupolev Tu-204",
+        "manufacturer": "Tupolev",
+        "range_km": 7100,
+        "capacity": 210,
+        "cruising_speed_kph": 850
+    },
+    "Fokker100": {
+        "model": "Fokker 100",
+        "manufacturer": "Fokker",
+        "range_km": 2000,
+        "capacity": 107,
+        "cruising_speed_kph": 800
+    },
+    "AerionAS2": {
+        "model": "Aerion AS2",
+        "manufacturer": "Aerion",
+        "range_km": 7400,
+        "capacity": 8,
+        "cruising_speed_kph": 1850
+    },
+    "Jetstream31": {
+        "model": "Jetstream 31",
+        "manufacturer": "British Aerospace",
+        "range_km": 1600,
+        "capacity": 19,
+        "cruising_speed_kph": 440
+    }
+}
