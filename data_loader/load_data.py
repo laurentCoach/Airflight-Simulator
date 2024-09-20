@@ -16,12 +16,6 @@ import sys
 def load_json(file_path):
     with open(file_path, 'r') as f:
         return json.load(f)
-
-# Function to connect to the database
-def connect_to_db(db_name):
-    conn = sqlite3.connect(db_name)  # Change to your database connection
-    return conn
-
     
 # Function to insert data into Company table
 def insert_airport_data(conn, airport_table, airport_data):
@@ -74,11 +68,10 @@ def insert_plane_data(conn, company_table, plane_table, plane_data, airline_plan
 # Main function
 def main():
     # Load JSON data
-    plane_data = load_json('/home/laurent/docker/airflight_project/cronjob/plane_data.json')
-    airline_companies = load_json('/home/laurent/docker/airflight_project/cronjob/airline_companies.json')
-    airline_plane_data = load_json('/home/laurent/docker/airflight_project/cronjob/airline_plane_data.json')
-    #flight_data = load_json('/home/laurent/docker/airflight_project/cronjob/flight_data.json')  # Adjust path and data format as needed
-    airport_coordinates = load_json('/home/laurent/docker/airflight_project/cronjob/airport_coordinates.json')
+    plane_data = load_json('/home/laurent/docker/airflight_project/Airflight-Simulator/data_loader/plane_data.json')
+    airline_companies = load_json('/home/laurent/docker/airflight_project/Airflight-Simulator/data_loader/airline_companies.json')
+    airline_plane_data = load_json('/home/laurent/docker/airflight_project/Airflight-Simulator/data_loader/airline_plane_data.json')
+    airport_coordinates = load_json('/home/laurent/docker/airflight_project/Airflight-Simulator/data_loader/airport_coordinates.json')
 
     # Define metadata
     metadata = MetaData()
@@ -134,40 +127,12 @@ def main():
         print("Error connecting to database:", str(e))
         
     # Insert data into Company table
+    # Insert airport data in Airport Table
     insert_airport_data(engine, airport_table, airport_coordinates)
+    # Insert company data in Company Table
     insert_plane_company_data(engine, company_table, airline_companies)
+    # Insert plane data in Plane Table
     insert_plane_data(engine, company_table, plane_table, plane_data, airline_plane_data)
-    sys.exit()
-
-    # Insert data into Company table
-    insert_company_data(conn, airline_companies)
-    
-    # Insert data into Plane table
-    insert_plane_data(conn, plane_data)
-    
-    # Map plane models to IDs
-    plane_id_map = {plane['Model']: plane_id for plane_id, plane in enumerate(plane_data)}
-    
-    # Map plane codes and company names to IDs
-    company_id_map = {company['IATACode']: company_id for company_id, company in enumerate(airline_companies)}
-    
-    # Prepare Plane_Company data
-    plane_company_data = [
-        {
-            'PlaneID': plane_id_map[plane_code],
-            'CompanyID': company_id_map[company_code]
-        }
-        for plane_code, company_code in airline_plane_data.items()
-    ]
-    
-    # Insert data into Plane_Company table
-    insert_plane_company_data(conn, plane_company_data)
-    
-    # Insert data into Flight table
-    insert_flight_data(conn, flight_data, plane_id_map, airline_companies)
-    
-    # Close the database connection
-    conn.close()
 
 if __name__ == "__main__":
     main()

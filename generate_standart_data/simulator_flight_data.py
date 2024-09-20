@@ -15,7 +15,8 @@ import pycountry
 from sqlalchemy import create_engine, DateTime, text, insert, Table, Column, Float, String, Integer, DateTime, Boolean, MetaData, select
 import sys
 import argparse
-
+from faker import Faker # Generate fake Name/Surname/Phone/Gender
+import pandas as pd
 
 def generate_random_code():
     # Generate two random parts, each with 6 characters (uppercase letters and digits)
@@ -174,7 +175,77 @@ def select_two_random_airports(conn):
         airp_dept = airports[0]
         airp_arr = airports[1]
         return airp_dept, airp_arr
+ 
+def generate_phone_number():
+    """Generate a random 10-digit phone number in the format like 0205040659."""
+    return ''.join([str(random.randint(0, 9)) for _ in range(10)])
+
+def generate_family_members(family_size, surname):
+    """Generate family members with the same surname, different first names, gender, and phone numbers."""
+    family_members = []
+    for _ in range(family_size):
+        gender = random.choice(["male", "female"])
+        if gender == "male":
+            first_name = fake.first_name_male()
+        else:
+            first_name = fake.first_name_female()
+
+        # Generate a fake 10-digit phone number
+        phone_number = generate_phone_number()
+        
+        family_members.append({
+            "Name": first_name,
+            "Surname": surname,
+            "Gender": gender,
+            "PhoneNumber": phone_number
+        })
+    return family_members
+
+def generate_passengers_information(num_passengers, flight_id):
+    passengers = []
+    while len(passengers) < num_passengers:
+        # Randomly decide if a family or individual will be added
+        if random.random() < 0.3:  # 30% chance to add a family
+            family_size = random.randint(2, 5)  # Family size between 2 and 5
+            surname = fake.last_name()
+            family_members = generate_family_members(family_size, surname)
+            
+            # Ensure we don't exceed the total number of passengers
+            if len(passengers) + len(family_members) <= num_passengers:
+                passengers.extend(family_members)
+            else:
+                gender = random.choice(["male", "female"])
+                first_name = fake.first_name_male() if gender == "male" else fake.first_name_female()
+                phone_number = generate_phone_number()
+                passengers.append({
+                    "Name": first_name,
+                    "Surname": fake.last_name(),
+                    "Gender": gender,
+                    "PhoneNumber": phone_number
+                })
+        else:
+            # Add a single random passenger
+            gender = random.choice(["male", "female"])
+            first_name = fake.first_name_male() if gender == "male" else fake.first_name_female()
+            phone_number = generate_phone_number()
+            passengers.append({
+                "Name": first_name,
+                "Surname": fake.last_name(),
+                "Gender": gender,
+                "PhoneNumber": phone_number
+            })
     
+    # Convert the list of dictionaries to a pandas DataFrame
+    passengers_df = pd.DataFrame(passengers)
+    
+    # Add the 'Mail' column
+    passengers_df['Mail'] = passengers_df['Name'].str.lower() + '.' + passengers_df['Surname'].str.lower() + '@mail.com'
+    passengers_df['FlightID'] = flight_id
+    
+    # Reorder the columns to match the specified order
+    passengers_df = passengers_df[['Name', 'Surname', 'PhoneNumber', 'Mail', 'Gender', 'FlightID']]
+    
+    return passengers_df
 
 # Main execution
 if __name__ == "__main__":
@@ -200,7 +271,7 @@ if __name__ == "__main__":
     PORT = 3306
     USER = 'laurent'  # Replace with your actual MySQL username
     PASSWORD = '123456789'  # Replace with your actual MySQL password
-    DATABASE = 'AIRFLIGHT_DB'
+    DATABASE = 'AIRFLIGHT_DB' # Replace with your actual MySQL DATABASE NAME
 
     # Construct the SQLAlchemy URL
     db_url = f"{DBAPI}://{USER}:{PASSWORD}@{ENDPOINT}:{PORT}/{DATABASE}"
@@ -216,7 +287,7 @@ if __name__ == "__main__":
     # Define metadata
     metadata = MetaData()
 
-    # Define the 'airport' table
+    # Define the 'Airport' table
     airport_table = Table(
         'Airport', metadata,
         Column('AirportID', Integer, primary_key=True, autoincrement=True),
@@ -224,7 +295,7 @@ if __name__ == "__main__":
         Column('Latitude', Float),
         Column('Longitude', Float)
     )
-    # Define the 'company' table
+    # Define the 'Company' table
     company_table = Table(
         'Company', metadata,
         Column('CompanyID', Integer, primary_key=True, autoincrement=True),
@@ -232,7 +303,7 @@ if __name__ == "__main__":
         Column('Country', String(255)),
         Column('IATACode', String(3))
     )
-    
+    # Define the 'Plane' table
     plane_table = Table(
         'Plane', metadata,
         Column('PlaneID', Integer, primary_key=True, autoincrement=True),
@@ -243,11 +314,10 @@ if __name__ == "__main__":
         Column('CruisingSpeedKPH', Integer),
         Column('CompanyID', Integer)
     )
-    
-    # Insert Data
+    # Define the 'Flight' table
     flight_table = Table(
         'Flight', metadata,
-        Column('FightID', Integer, primary_key=True, autoincrement=True),
+        Column('FlightID', Integer, primary_key=True, autoincrement=True),
         Column('FlightCode', String(13)),
         Column('AirportDeparture', Integer),
         Column('AirportArrival', Integer),
@@ -259,6 +329,17 @@ if __name__ == "__main__":
         Column('FlightTimeMinutes', Integer),
         Column('NbPassenger', Integer),
         Column('PlaneID', Integer)
+    )
+    # Define the 'Passenger' table
+    passenger_table = Table(
+        'Passenger', metadata,
+        Column('PassengerID', Integer, primary_key=True, autoincrement=True),
+        Column('Name', String(255), nullable=False),
+        Column('Surname', String(255), nullable=False),
+        Column('PhoneNumber', String(10)),
+        Column('Mail', String(255), nullable=False),
+        Column('Gender', String(255), nullable=False),
+        Column('FlightID', Integer)
     )
         
     # Load the airports database
@@ -327,10 +408,21 @@ if __name__ == "__main__":
                                                                 Distance=Distance_,
                                                                 FlightTimeMinutes=FlightTimeMinutes_,
                                                                 NbPassenger=NbPassenger_,
-                                                                PlaneID=PlaneID_)
-                    conn.execute(insert_query)
+                                                                PlaneID=PlaneID_
+                                                                )
+                    result = conn.execute(insert_query)
+                    new_flight_id = result.lastrowid
+                    conn.commit()
+                    
+            
+                    # Get the passenger information
+                    fake = Faker()
+                    passenger_df = generate_passengers_information(passenger_number, new_flight_id)
+                    
+                    data = passenger_df.to_dict(orient='records')  # Convert DataFrame to a list of dictionaries
+                    conn.execute(passenger_table.insert(), data)
                     conn.commit()
                     conn.close()
-                print(f"Data properly inserted!")
+                    print(f"Data properly inserted!")
     except ValueError as e:
         print(f'Error in the simulator for flight {FlightCode_}: {e}')

@@ -1,5 +1,5 @@
 -- COMMAND TO EXECUTE THE SCRIPT
--- source /home/laurent/docker/airflight_project/database/build_db.sql
+-- source /home/laurent/docker/airflight_project/Airflight-Simulator/database/build_db.sql
 -- DROP DATABASE AIRFLIGHT_DB;
 
 -- Create the database
@@ -56,4 +56,16 @@ CREATE TABLE Flight (
     FOREIGN KEY (PlaneID) REFERENCES Plane(PlaneID) ON DELETE CASCADE,
     FOREIGN KEY (AirportDeparture) REFERENCES Airport(AirportID) ON DELETE CASCADE,
     FOREIGN KEY (AirportArrival) REFERENCES Airport(AirportID) ON DELETE CASCADE
+);
+
+-- Create the Person table
+CREATE TABLE Passenger (
+    PassengerID INT AUTO_INCREMENT PRIMARY KEY,  -- Auto-increment primary key
+    Name VARCHAR(255) NOT NULL,
+    Surname VARCHAR(255) NOT NULL,
+    PhoneNumber VARCHAR(10) NOT NULL,
+    Mail VARCHAR(255) NOT NULL,
+    Gender VARCHAR(255) NOT NULL,
+    FlightID INT NOT NULL,
+    FOREIGN KEY (FlightID) REFERENCES Flight(FlightID) ON DELETE CASCADE
 );
