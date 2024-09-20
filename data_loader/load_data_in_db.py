@@ -1,10 +1,12 @@
 """
 Author : Laurent Cesaro
-Topic : Python file to generate flight data and save them in the database
+Topic : Python file to load start data in the database
+ - Airline companies data
+ - Planes data
+ - Airports data
 """
 
 import json
-import sqlite3  # Replace with mysql.connector or psycopg2 for MySQL/PostgreSQL
 from datetime import datetime, timedelta
 
 from sqlalchemy import create_engine, insert, Table, Column, Float, String, Integer, DateTime, Boolean, MetaData, select
@@ -126,7 +128,6 @@ def main():
     except Exception as e:
         print("Error connecting to database:", str(e))
         
-    # Insert data into Company table
     # Insert airport data in Airport Table
     insert_airport_data(engine, airport_table, airport_coordinates)
     # Insert company data in Company Table
