@@ -26,7 +26,13 @@ def insert_airport_data(conn, airport_table, airport_data):
             AirportCode_ = doc_[0]
             Latitude_ = doc_[1][0]
             Longitude_ = doc_[1][1]
-            stmt = insert(airport_table).values(AirportCode=AirportCode_, Latitude=Latitude_, Longitude=Longitude_)
+            LandingPrice_ = doc_[1][2]
+            AirportCountry_ = doc_[1][3]
+            stmt = insert(airport_table).values(AirportCode=AirportCode_, 
+                                                Latitude=Latitude_, 
+                                                Longitude=Longitude_, 
+                                                LandingPrice=LandingPrice_, 
+                                                AirportCountry=AirportCountry_)
             conn.execute(stmt)
             conn.commit()
             
@@ -57,7 +63,7 @@ def insert_plane_data(conn, company_table, plane_table, plane_data, airline_plan
                     RangeKM_ = plane_data[plane_]['range_km']
                     Capacity_ = plane_data[plane_]['capacity']
                     CruisingSpeedKPH_ = plane_data[plane_]['cruising_speed_kph']
-                    WeightKG_ = plane_data[plane_]['WeightKG']
+                    WeightKG_ = plane_data[plane_]['weight_kg']
                     insert_query = insert(plane_table).values(Model=Model_, 
                                                     Manufacturer=Manufacturer_, 
                                                     RangeKM=RangeKM_,
@@ -86,7 +92,9 @@ def main():
         Column('AirportID', Integer, primary_key=True, autoincrement=True),
         Column('AirportCode', String(3)),
         Column('Latitude', Float),
-        Column('Longitude', Float)
+        Column('Longitude', Float),
+        Column('LandingPrice', Float),
+        Column('AirportCountry', String(255))
     )
     # Define the 'company' table
     company_table = Table(

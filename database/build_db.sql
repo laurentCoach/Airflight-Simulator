@@ -35,7 +35,8 @@ CREATE TABLE Airport (
     AirportCode CHAR(3) NOT NULL,
     Latitude FLOAT,
     Longitude FLOAT,
-    PriceLanding INT
+    LandingPrice INT,
+    AirportCountry VARCHAR(255) NOT NULL
 );
 
 -- Create the Plane table
@@ -57,8 +58,6 @@ CREATE TABLE Flight (
     FlightCode VARCHAR(13) NOT NULL,
     AirportDeparture INT,  -- Foreign key referencing AirportID in the Airport table
     AirportArrival INT,    -- Foreign key referencing AirportID in the Airport table
-    CountryDeparture VARCHAR(255) NOT NULL,
-    CountryArrival VARCHAR(255) NOT NULL,
     TimeDeparture DATETIME NOT NULL,
     TimeArrival DATETIME NOT NULL,
     Distance INT NOT NULL,
@@ -85,7 +84,7 @@ CREATE TABLE Passenger (
 -- Create the Consumption table
 CREATE TABLE Consumption (
     ConsumptionID INT AUTO_INCREMENT PRIMARY KEY,  -- Auto-increment primary key
-    GasPrice FLOAT NOT NULL, -- Scrap in Real time
+    GasPriceDollar FLOAT NOT NULL, -- Scrap in Real time
     GasConsumption FLOAT NOT NULL, -- Consumption per person, km, and flight
     TotalTankPrice FLOAT NOT NULL, -- Full Price to fill a tank plane
     FlightID INT NOT NULL,

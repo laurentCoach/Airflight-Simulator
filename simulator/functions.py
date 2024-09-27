@@ -240,3 +240,54 @@ def generate_passengers_information(fake, num_passengers):
     passengers_df['Mail'] = passengers_df['Name'].str.lower() + '.' + passengers_df['Surname'].str.lower() + '@mail.com'
     
     return passengers_df
+
+# Compute the consumption of fuel
+def calculate_fuel_cost(weighKG, gas_price_per_gallon, flight_distance_km, num_people=0, avg_weight_per_person=75, efficiency_constant=15):
+    """
+    Calculates the total fuel cost for a flight.
+
+    Parameters:
+    - weighKG: Weight of the plane in kilograms.
+    - gas_price_per_gallon: Price of fuel per gallon.
+    - flight_distance_km: The distance of the flight in kilometers.
+    - num_people: Number of passengers (default is 0 if not provided).
+    - avg_weight_per_person: Average weight of each person in kilograms (default is 75 kg).
+    - efficiency_constant: Constant that reflects fuel efficiency of the aircraft (default is 15, a typical value).
+
+    Returns:
+    - fuel_cost: The total cost of fuel for the flight.
+    - fuel_volume_gallons: The total fuel volume required in gallons.
+    """
+
+    # Adjust weight to include passengers (optional)
+    total_weight = weighKG + (num_people * avg_weight_per_person)
+
+    # Calculate fuel consumption (kg per km)
+    fuel_consumption_per_km = total_weight / efficiency_constant
+
+    # Calculate the total fuel needed for the flight in kg
+    total_fuel_kg = fuel_consumption_per_km * flight_distance_km
+
+    # Convert fuel from kg to liters (1 liter = 0.8 kg)
+    total_fuel_liters = total_fuel_kg / 0.8
+
+    # Convert liters to gallons (1 gallon = 3.785 liters)
+    total_fuel_gallons = total_fuel_liters / 3.785
+
+    # Calculate total fuel cost
+    total_fuel_cost = total_fuel_gallons * gas_price_per_gallon
+
+    return total_fuel_cost, total_fuel_gallons
+
+# Example usage
+weighKG = 277000  # weight of a Boeing 777-200LR in kg
+gas_price_per_gallon = 4.50  # example gas price per gallon
+flight_distance_km = 14800  # flight distance (max range of a 777-200LR in km)
+num_people = 300  # number of passengers
+avg_weight_per_person = 75  # average weight of a person in kg
+efficiency_constant = 15  # a typical value for a large commercial plane
+
+fuel_cost, fuel_volume_gallons = calculate_fuel_cost(weighKG, gas_price_per_gallon, flight_distance_km, num_people, avg_weight_per_person, efficiency_constant)
+
+print(f"Total fuel cost: ${fuel_cost:.2f}")
+print(f"Total fuel volume: {fuel_volume_gallons:.2f} gallons")

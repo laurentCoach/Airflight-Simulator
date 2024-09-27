@@ -64,7 +64,9 @@ if __name__ == "__main__":
         Column('AirportID', Integer, primary_key=True, autoincrement=True),
         Column('AirportCode', String(3)),
         Column('Latitude', Float),
-        Column('Longitude', Float)
+        Column('Longitude', Float),
+        Column('LandingPrice', Float),
+        Column('AirportCountry', String(255))
     )
     # Define the 'Company' table
     company_table = Table(
@@ -92,8 +94,6 @@ if __name__ == "__main__":
         Column('FlightCode', String(13)),
         Column('AirportDeparture', Integer),
         Column('AirportArrival', Integer),
-        Column('CountryDeparture', String(255)),
-        Column('CountryArrival', String(255)),
         Column('TimeDeparture', DateTime),
         Column('TimeArrival', DateTime),
         Column('Distance', Integer),
@@ -149,8 +149,8 @@ if __name__ == "__main__":
             #print(f"The distance between {airport_departure[1]} and {airport_arrival[1]} is {distance} kilometers.")
             
             # Get the departure country and the arrival country
-            country_departure = get_airport_info(airport_departure[1], airports)
-            country_arrival = get_airport_info(airport_arrival[1], airports)
+            country_departure = get_airport_info(airport_departure[1], airports) # To delete
+            country_arrival = get_airport_info(airport_arrival[1], airports) # To delete
             #print(f"Country Departure is {country_departure} and country arrival is {country_arrival}.")
             
             # Select a plane with sufficient range
@@ -182,8 +182,6 @@ if __name__ == "__main__":
                 FlightCode_ = FlightCode_
                 AirportDeparture_ = airport_departure[0]
                 AirportArrival_ = airport_arrival[0]
-                CountryDeparture_ = country_departure
-                CountryArrival_ = country_arrival
                 TimeDeparture_ = departure_time
                 TimeArrival_ = arrival_time
                 Distance_ = distance
@@ -194,8 +192,6 @@ if __name__ == "__main__":
                     insert_query = insert(flight_table).values(FlightCode=FlightCode_, 
                                                                 AirportDeparture=AirportDeparture_,
                                                                 AirportArrival=AirportArrival_,
-                                                                CountryDeparture=CountryDeparture_,
-                                                                CountryArrival=CountryArrival_,
                                                                 TimeDeparture=TimeDeparture_,
                                                                 TimeArrival=TimeArrival_,
                                                                 Distance=Distance_,
