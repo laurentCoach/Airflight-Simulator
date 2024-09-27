@@ -57,11 +57,13 @@ def insert_plane_data(conn, company_table, plane_table, plane_data, airline_plan
                     RangeKM_ = plane_data[plane_]['range_km']
                     Capacity_ = plane_data[plane_]['capacity']
                     CruisingSpeedKPH_ = plane_data[plane_]['cruising_speed_kph']
+                    WeightKG_ = plane_data[plane_]['WeightKG']
                     insert_query = insert(plane_table).values(Model=Model_, 
                                                     Manufacturer=Manufacturer_, 
                                                     RangeKM=RangeKM_,
                                                     Capacity=Capacity_,
                                                     CruisingSpeedKPH=CruisingSpeedKPH_,
+                                                    WeightKG=WeightKG_,
                                                     CompanyID=CompanyID_)
                     conn.execute(insert_query)
                     conn.commit()
@@ -103,6 +105,7 @@ def main():
         Column('RangeKM', Integer),
         Column('Capacity', Integer),
         Column('CruisingSpeedKPH', Integer),
+        Column('WeightKG', Integer),
         Column('CompanyID', Integer)
     )
 

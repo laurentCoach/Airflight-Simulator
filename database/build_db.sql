@@ -19,12 +19,23 @@ CREATE TABLE Company (
     IATACode CHAR(3) UNIQUE NOT NULL
 );
 
+-- Create the Company table
+CREATE TABLE Company_Income (
+    IncomeID INT AUTO_INCREMENT PRIMARY KEY,
+    Income FLOAT NOT NULL,
+    TransactionDate DATETIME NOT NULL,
+    Topic VARCHAR(255) NOT NULL,
+    CompanyID INT NOT NULL,
+    FOREIGN KEY (CompanyID) REFERENCES Company(CompanyID) ON DELETE CASCADE
+);
+
 -- Create the Plane table
 CREATE TABLE Airport (
     AirportID INT AUTO_INCREMENT PRIMARY KEY,
     AirportCode CHAR(3) NOT NULL,
     Latitude FLOAT,
-    Longitude FLOAT
+    Longitude FLOAT,
+    PriceLanding INT
 );
 
 -- Create the Plane table
@@ -35,6 +46,7 @@ CREATE TABLE Plane (
     RangeKM INT NOT NULL,
     Capacity INT NOT NULL,
     CruisingSpeedKPH INT NOT NULL,
+    WeightKG INT,
     CompanyID INT NOT NULL,
     FOREIGN KEY (CompanyID) REFERENCES Company(CompanyID) ON DELETE CASCADE
 );
@@ -66,6 +78,16 @@ CREATE TABLE Passenger (
     PhoneNumber VARCHAR(10) NOT NULL,
     Mail VARCHAR(255) NOT NULL,
     Gender VARCHAR(255) NOT NULL,
+    FlightID INT NOT NULL,
+    FOREIGN KEY (FlightID) REFERENCES Flight(FlightID) ON DELETE CASCADE
+);
+
+-- Create the Consumption table
+CREATE TABLE Consumption (
+    ConsumptionID INT AUTO_INCREMENT PRIMARY KEY,  -- Auto-increment primary key
+    GasPrice FLOAT NOT NULL, -- Scrap in Real time
+    GasConsumption FLOAT NOT NULL, -- Consumption per person, km, and flight
+    TotalTankPrice FLOAT NOT NULL, -- Full Price to fill a tank plane
     FlightID INT NOT NULL,
     FOREIGN KEY (FlightID) REFERENCES Flight(FlightID) ON DELETE CASCADE
 );

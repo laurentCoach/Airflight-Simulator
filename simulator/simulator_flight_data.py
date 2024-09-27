@@ -112,6 +112,24 @@ if __name__ == "__main__":
         Column('Gender', String(255), nullable=False),
         Column('FlightID', Integer)
     )
+    # Define the 'Company_Income' table
+    company_income_table = Table(
+        'Company_Income', metadata,
+        Column('IncomeID', Integer, primary_key=True, autoincrement=True),
+        Column('Income', Integer),
+        Column('TransactionDate', DateTime),
+        Column('Topic', String(10)),
+        Column('CompanyID', Integer)
+    )
+    # Define the 'Consumption' table
+    consumption_table = Table(
+        'Passenger', metadata,
+        Column('ConsumptionID', Integer, primary_key=True, autoincrement=True),
+        Column('GasPrice', Integer),
+        Column('GasConsumption', Integer),
+        Column('TotalTankPrice', Integer),
+        Column('FlightID', Integer)
+    )
         
     # Load the airports database
     airports = airportsdata.load("IATA")
