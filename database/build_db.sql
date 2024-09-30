@@ -45,9 +45,10 @@ CREATE TABLE Plane (
     Model VARCHAR(255) NOT NULL,
     Manufacturer VARCHAR(255) NOT NULL,
     RangeKM INT NOT NULL,
-    Capacity INT NOT NULL,
+    PassengerCapacity INT NOT NULL,
     CruisingSpeedKPH INT NOT NULL,
-    WeightKG INT,
+    WeightKG INT NOT NULL,
+    TankCapacityInGallon INT NOT NULL,
     CompanyID INT NOT NULL,
     FOREIGN KEY (CompanyID) REFERENCES Company(CompanyID) ON DELETE CASCADE
 );
@@ -79,6 +80,14 @@ CREATE TABLE Passenger (
     Gender VARCHAR(255) NOT NULL,
     FlightID INT NOT NULL,
     FOREIGN KEY (FlightID) REFERENCES Flight(FlightID) ON DELETE CASCADE
+);
+
+-- Create the Person table
+CREATE TABLE Ticket (
+    TicketID INT AUTO_INCREMENT PRIMARY KEY,  -- Auto-increment primary key
+    PriceDollar INT NOT NULL,
+    PassengerID INT NOT NULL,
+    FOREIGN KEY (PassengerID) REFERENCES Passenger(PassengerID) ON DELETE CASCADE
 );
 
 -- Create the Consumption table

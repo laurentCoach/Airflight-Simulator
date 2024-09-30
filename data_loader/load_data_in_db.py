@@ -61,15 +61,17 @@ def insert_plane_data(conn, company_table, plane_table, plane_data, airline_plan
                     Model_ = plane_data[plane_]['model']
                     Manufacturer_ = plane_data[plane_]['manufacturer']
                     RangeKM_ = plane_data[plane_]['range_km']
-                    Capacity_ = plane_data[plane_]['capacity']
+                    PassengerCapacity_ = plane_data[plane_]['passenger_capacity']
                     CruisingSpeedKPH_ = plane_data[plane_]['cruising_speed_kph']
                     WeightKG_ = plane_data[plane_]['weight_kg']
+                    TankCapacityInGallon_ = plane_data[plane_]['tank_capacity_in_gallon']
                     insert_query = insert(plane_table).values(Model=Model_, 
                                                     Manufacturer=Manufacturer_, 
                                                     RangeKM=RangeKM_,
-                                                    Capacity=Capacity_,
+                                                    PassengerCapacity=PassengerCapacity_,
                                                     CruisingSpeedKPH=CruisingSpeedKPH_,
                                                     WeightKG=WeightKG_,
+                                                    TankCapacityInGallon=TankCapacityInGallon_,
                                                     CompanyID=CompanyID_)
                     conn.execute(insert_query)
                     conn.commit()
@@ -105,17 +107,20 @@ def main():
         Column('IATACode', String(3))
     )
     
+    # Define the 'Plane' table
     plane_table = Table(
         'Plane', metadata,
         Column('PlaneID', Integer, primary_key=True, autoincrement=True),
         Column('Model', String(255)),
         Column('Manufacturer', String(255)),
         Column('RangeKM', Integer),
-        Column('Capacity', Integer),
+        Column('PassengerCapacity', Integer),
         Column('CruisingSpeedKPH', Integer),
         Column('WeightKG', Integer),
+        Column('TankCapacityInGallon', Integer),
         Column('CompanyID', Integer)
     )
+
 
     # Connect to the database
     # Database connection configuration
@@ -139,12 +144,16 @@ def main():
     except Exception as e:
         print("Error connecting to database:", str(e))
         
-    # Insert airport data in Airport Table
-    insert_airport_data(engine, airport_table, airport_coordinates)
-    # Insert company data in Company Table
-    insert_plane_company_data(engine, company_table, airline_companies)
-    # Insert plane data in Plane Table
-    insert_plane_data(engine, company_table, plane_table, plane_data, airline_plane_data)
+    try:
+        # Insert airport data in Airport Table
+        insert_airport_data(engine, airport_table, airport_coordinates)
+        # Insert company data in Company Table
+        insert_plane_company_data(engine, company_table, airline_companies)
+        # Insert plane data in Plane Table
+        insert_plane_data(engine, company_table, plane_table, plane_data, airline_plane_data)
+        print('Data properly inserted !')
+    except Exception as e:
+        print("Error inserting data:", str(e))
 
 if __name__ == "__main__":
     main()

@@ -3,312 +3,351 @@
         "model": "Airbus A380",
         "manufacturer": "Airbus",
         "range_km": 15200,
-        "capacity": 555,
+        "passenger_capacity": 555,
         "cruising_speed_kph": 900,
-        "weight_kg": 560000
+        "weight_kg": 560000,
+        "tank_capacity_in_gallon": 84500
     },
     "747": {
         "model": "Boeing 747-8",
         "manufacturer": "Boeing",
         "range_km": 13600,
-        "capacity": 410,
+        "passenger_capacity": 410,
         "cruising_speed_kph": 914,
-        "weight_kg": 447700
+        "weight_kg": 447700,
+        "tank_capacity_in_gallon": 63034
     },
     "787": {
         "model": "Boeing 787 Dreamliner",
         "manufacturer": "Boeing",
         "range_km": 14800,
-        "capacity": 296,
+        "passenger_capacity": 296,
         "cruising_speed_kph": 913,
-        "weight_kg": 254000
+        "weight_kg": 254000,
+        "tank_capacity_in_gallon": 33400
     },
     "737": {
         "model": "Boeing 737 MAX 8",
         "manufacturer": "Boeing",
         "range_km": 6435,
-        "capacity": 210,
+        "passenger_capacity": 210,
         "cruising_speed_kph": 842,
-        "weight_kg": 82191
+        "weight_kg": 82191,
+        "tank_capacity_in_gallon": 6875
     },
     "320": {
         "model": "Airbus A320neo",
         "manufacturer": "Airbus",
         "range_km": 6100,
-        "capacity": 150,
+        "passenger_capacity": 150,
         "cruising_speed_kph": 828,
-        "weight_kg": 79000
+        "weight_kg": 79000,
+        "tank_capacity_in_gallon": 6400
     },
     "330": {
         "model": "Airbus A330-300",
         "manufacturer": "Airbus",
         "range_km": 11600,
-        "capacity": 277,
+        "passenger_capacity": 277,
         "cruising_speed_kph": 870,
-        "weight_kg": 233000
+        "weight_kg": 233000,
+        "tank_capacity_in_gallon": 36500
     },
     "350": {
         "model": "Airbus A350-900",
         "manufacturer": "Airbus",
         "range_km": 15000,
-        "capacity": 315,
+        "passenger_capacity": 315,
         "cruising_speed_kph": 903,
-        "weight_kg": 280000
+        "weight_kg": 280000,
+        "tank_capacity_in_gallon": 41000
     },
     "78710": {
         "model": "Boeing 787-10",
         "manufacturer": "Boeing",
         "range_km": 11100,
-        "capacity": 318,
+        "passenger_capacity": 318,
         "cruising_speed_kph": 913,
-        "weight_kg": 254000
+        "weight_kg": 254000,
+        "tank_capacity_in_gallon": 33340
     },
     "777": {
         "model": "Boeing 777-200LR",
         "manufacturer": "Boeing",
         "range_km": 14800,
-        "capacity": 317,
+        "passenger_capacity": 317,
         "cruising_speed_kph": 905,
-        "weight_kg": 347800
+        "weight_kg": 347800,
+        "tank_capacity_in_gallon": 47895
     },
     "E190": {
         "model": "Embraer E190",
         "manufacturer": "Embraer",
         "range_km": 5556,
-        "capacity": 100,
+        "passenger_capacity": 100,
         "cruising_speed_kph": 870,
-        "weight_kg": 50800
+        "weight_kg": 50800,
+        "tank_capacity_in_gallon": 3900
     },
     "CRJ900": {
         "model": "Bombardier CRJ900",
         "manufacturer": "Bombardier",
         "range_km": 3000,
-        "capacity": 90,
+        "passenger_capacity": 90,
         "cruising_speed_kph": 835,
-        "weight_kg": 37900
+        "weight_kg": 37900,
+        "tank_capacity_in_gallon": 2600
     },
     "CSeries": {
         "model": "Airbus A220",
         "manufacturer": "Airbus",
         "range_km": 6111,
-        "capacity": 150,
+        "passenger_capacity": 150,
         "cruising_speed_kph": 871,
-        "weight_kg": 67800
+        "weight_kg": 67800,
+        "tank_capacity_in_gallon": 5300
     },
     "F50": {
         "model": "Fokker 50",
         "manufacturer": "Fokker",
         "range_km": 1000,
-        "capacity": 50,
+        "passenger_capacity": 50,
         "cruising_speed_kph": 550,
-        "weight_kg": 21000
+        "weight_kg": 21000,
+        "tank_capacity_in_gallon": 830
     },
     "Hawker800": {
         "model": "Hawker 800",
         "manufacturer": "Hawker",
         "range_km": 4600,
-        "capacity": 8,
+        "passenger_capacity": 8,
         "cruising_speed_kph": 850,
-        "weight_kg": 12250
+        "weight_kg": 12250,
+        "tank_capacity_in_gallon": 2100
     },
     "G550": {
         "model": "Gulfstream G550",
         "manufacturer": "Gulfstream Aerospace",
         "range_km": 12000,
-        "capacity": 16,
+        "passenger_capacity": 16,
         "cruising_speed_kph": 900,
-        "weight_kg": 41275
+        "weight_kg": 41275,
+        "tank_capacity_in_gallon": 4750
     },
     "A321": {
         "model": "Airbus A321neo",
         "manufacturer": "Airbus",
         "range_km": 7400,
-        "capacity": 244,
+        "passenger_capacity": 244,
         "cruising_speed_kph": 828,
-        "weight_kg": 93500
+        "weight_kg": 93500,
+        "tank_capacity_in_gallon": 6400
     },
     "A310": {
         "model": "Airbus A310",
         "manufacturer": "Airbus",
         "range_km": 9250,
-        "capacity": 280,
+        "passenger_capacity": 280,
         "cruising_speed_kph": 825,
-        "weight_kg": 157000
+        "weight_kg": 157000,
+        "tank_capacity_in_gallon": 24390
     },
     "737800": {
         "model": "Boeing 737-800",
         "manufacturer": "Boeing",
         "range_km": 5440,
-        "capacity": 189,
+        "passenger_capacity": 189,
         "cruising_speed_kph": 839,
-        "weight_kg": 79000
+        "weight_kg": 79000,
+        "tank_capacity_in_gallon": 6850
     },
     "737900": {
         "model": "Boeing 737-900",
         "manufacturer": "Boeing",
         "range_km": 5735,
-        "capacity": 220,
+        "passenger_capacity": 220,
         "cruising_speed_kph": 839,
-        "weight_kg": 85400
+        "weight_kg": 85400,
+        "tank_capacity_in_gallon": 6940
     },
     "E175": {
         "model": "Embraer E175",
         "manufacturer": "Embraer",
         "range_km": 4444,
-        "capacity": 76,
+        "passenger_capacity": 76,
         "cruising_speed_kph": 828,
-        "weight_kg": 38100
+        "weight_kg": 38100,
+        "tank_capacity_in_gallon": 3200
     },
     "A319": {
         "model": "Airbus A319",
         "manufacturer": "Airbus",
         "range_km": 6700,
-        "capacity": 156,
+        "passenger_capacity": 156,
         "cruising_speed_kph": 828,
-        "weight_kg": 75500
+        "weight_kg": 75500,
+        "tank_capacity_in_gallon": 6400
     },
     "CRJ1000": {
         "model": "Bombardier CRJ1000",
         "manufacturer": "Bombardier",
         "range_km": 3000,
-        "capacity": 104,
+        "passenger_capacity": 104,
         "cruising_speed_kph": 835,
-        "weight_kg": 39250
+        "weight_kg": 39250,
+        "tank_capacity_in_gallon": 2600
     },
     "F70": {
         "model": "Fokker 70",
         "manufacturer": "Fokker",
         "range_km": 2200,
-        "capacity": 80,
+        "passenger_capacity": 80,
         "cruising_speed_kph": 730,
-        "weight_kg": 22000
+        "weight_kg": 22000,
+        "tank_capacity_in_gallon": 1740
     },
     "G450": {
         "model": "Gulfstream G450",
         "manufacturer": "Gulfstream Aerospace",
         "range_km": 8000,
-        "capacity": 14,
+        "passenger_capacity": 14,
         "cruising_speed_kph": 850,
-        "weight_kg": 33500
+        "weight_kg": 33500,
+        "tank_capacity_in_gallon": 2900
     },
     "Global7500": {
         "model": "Bombardier Global 7500",
         "manufacturer": "Bombardier",
         "range_km": 14000,
-        "capacity": 19,
+        "passenger_capacity": 19,
         "cruising_speed_kph": 920,
-        "weight_kg": 48500
+        "weight_kg": 48500,
+        "tank_capacity_in_gallon": 4850
     },
     "BBJ": {
         "model": "Boeing Business Jet",
         "manufacturer": "Boeing",
         "range_km": 10500,
-        "capacity": 25,
+        "passenger_capacity": 25,
         "cruising_speed_kph": 850,
-        "weight_kg": 77400
+        "weight_kg": 77400,
+        "tank_capacity_in_gallon": 6875
     },
     "KingAir350": {
         "model": "Beechcraft King Air 350",
         "manufacturer": "Beechcraft",
         "range_km": 2880,
-        "capacity": 11,
+        "passenger_capacity": 11,
         "cruising_speed_kph": 500,
-        "weight_kg": 6800
+        "weight_kg": 6800,
+        "tank_capacity_in_gallon": 2000
     },
     "CitationX": {
         "model": "Cessna Citation X",
         "manufacturer": "Cessna",
         "range_km": 5926,
-        "capacity": 8,
+        "passenger_capacity": 8,
         "cruising_speed_kph": 950,
-        "weight_kg": 16900
+        "weight_kg": 16900,
+        "tank_capacity_in_gallon": 1200
     },
     "Falcon7X": {
         "model": "Dassault Falcon 7X",
         "manufacturer": "Dassault",
         "range_km": 11112,
-        "capacity": 14,
+        "passenger_capacity": 14,
         "cruising_speed_kph": 900,
-        "weight_kg": 31750
+        "weight_kg": 31750,
+        "tank_capacity_in_gallon": 3200
     },
     "Phenom300": {
         "model": "Embraer Phenom 300",
         "manufacturer": "Embraer",
         "range_km": 3461,
-        "capacity": 9,
+        "passenger_capacity": 9,
         "cruising_speed_kph": 833,
-        "weight_kg": 8500
+        "weight_kg": 8500,
+        "tank_capacity_in_gallon": 1700
     },
     "A330Neo": {
         "model": "Airbus A330neo",
         "manufacturer": "Airbus",
         "range_km": 12200,
-        "capacity": 287,
+        "passenger_capacity": 287,
         "cruising_speed_kph": 871,
-        "weight_kg": 242000
+        "weight_kg": 242000,
+        "tank_capacity_in_gallon": 36500
     },
     "A340": {
         "model": "Airbus A340-600",
         "manufacturer": "Airbus",
         "range_km": 14800,
-        "capacity": 359,
+        "passenger_capacity": 359,
         "cruising_speed_kph": 871,
-        "weight_kg": 380000
+        "weight_kg": 380000,
+        "tank_capacity_in_gallon": 51610
     },
     "747400": {
         "model": "Boeing 747-400",
         "manufacturer": "Boeing",
         "range_km": 12000,
-        "capacity": 416,
+        "passenger_capacity": 416,
         "cruising_speed_kph": 907,
-        "weight_kg": 396890
+        "weight_kg": 396890,
+        "tank_capacity_in_gallon": 57285
     },
     "CRJ700": {
         "model": "Bombardier CRJ700",
         "manufacturer": "Bombardier",
         "range_km": 2900,
-        "capacity": 70,
+        "passenger_capacity": 70,
         "cruising_speed_kph": 835,
-        "weight_kg": 32800
+        "weight_kg": 32800,
+        "tank_capacity_in_gallon": 2100
     },
     "SuperJet100": {
         "model": "Sukhoi Superjet 100",
         "manufacturer": "Sukhoi",
         "range_km": 3000,
-        "capacity": 100,
+        "passenger_capacity": 100,
         "cruising_speed_kph": 800,
-        "weight_kg": 45880
+        "weight_kg": 45880,
+        "tank_capacity_in_gallon": 2600
     },
     "TupolevTu204": {
         "model": "Tupolev Tu-204",
         "manufacturer": "Tupolev",
         "range_km": 7100,
-        "capacity": 210,
+        "passenger_capacity": 210,
         "cruising_speed_kph": 850,
-        "weight_kg": 103000
+        "weight_kg": 103000,
+        "tank_capacity_in_gallon": 36000
     },
     "Fokker100": {
         "model": "Fokker 100",
         "manufacturer": "Fokker",
         "range_km": 2000,
-        "capacity": 107,
+        "passenger_capacity": 107,
         "cruising_speed_kph": 800,
-        "weight_kg": 45130
+        "weight_kg": 45130,
+        "tank_capacity_in_gallon": 4600
     },
     "AerionAS2": {
         "model": "Aerion AS2",
         "manufacturer": "Aerion",
         "range_km": 7400,
-        "capacity": 8,
+        "passenger_capacity": 8,
         "cruising_speed_kph": 1850,
-        "weight_kg": 53000
+        "weight_kg": 53000,
+        "tank_capacity_in_gallon": 5000
     },
     "Jetstream31": {
         "model": "Jetstream 31",
         "manufacturer": "British Aerospace",
         "range_km": 1600,
-        "capacity": 19,
+        "passenger_capacity": 19,
         "cruising_speed_kph": 440,
-        "weight_kg": 7100
+        "weight_kg": 7100,
+        "tank_capacity_in_gallon": 510
     }
 }

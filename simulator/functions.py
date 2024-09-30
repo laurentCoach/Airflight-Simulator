@@ -241,8 +241,165 @@ def generate_passengers_information(fake, num_passengers):
     
     return passengers_df
 
+# Compute ticket price
+def compute_ticket_price(num_passengers, distance_km, departure_time, df, departure_init):
+    """
+    Compute ticket prices based on aircraft capacity, distance, and class distribution.
+
+    Args:
+        num_passengers (int): The capacity of the plane.
+        distance_km (float): The distance of the flight in kilometers.
+        departure_time Datetime: Date of the departure
+        df (dataframe): The list of the passenger randomly generated
+    Returns:
+        df
+    """
+    df['Departure_Time'] = departure_time
+    df['Departure_Time'] = pd.to_datetime(df['Departure_Time'], format="%Y/%m/%d %H:%M:%S")
+    df = df.reset_index()
+    
+    if num_passengers < 20:
+        # For planes with capacity under 20, ticket cost between 10000 and 50000 dollars
+        ticket_price = random.randint(10000, 50000)
+        #return {"ticket_price": ticket_price}
+
+    elif 21 <= num_passengers <= 99:
+        # For planes with num_passengers between 21 and 99, ticket cost between 2000 and 10000 dollars
+        ticket_price = random.randint(2000, 10000)
+        #return {"ticket_price": ticket_price}
+
+    else:
+        # For planes with num_passengers more than 99, we simulate first, second, and third class prices.
+
+        # Define class distribution percentages
+        first_class_percentage = 0.05
+        second_class_percentage = 0.15
+        third_class_percentage = 0.80
+
+        # Calculate the number of passengers in each class
+        first_class_seats = int(num_passengers * first_class_percentage)
+        second_class_seats = int(num_passengers * second_class_percentage)
+        third_class_seats = int(num_passengers * third_class_percentage)
+
+        if distance_km >= 1000:   
+            # Define base ticket prices based on distance (longer distance = higher price)
+            base_price_per_km = 0.15  # base price in dollars per km
+            first_class_price = base_price_per_km * distance_km * 10 # First class: more expensive, e.g., 10 times the base price
+            second_class_price = base_price_per_km * distance_km * 5 # Second class: mid-range, e.g., 5 times the base price
+            third_class_price = base_price_per_km * distance_km * 2 # Third class: cheapest, e.g., 2 times the base price
+        elif distance_km > 1000 and distance_km < 5000:   
+            # Define base ticket prices based on distance (longer distance = higher price)
+            base_price_per_km = 0.10  # base price in dollars per km            
+            first_class_price = base_price_per_km * distance_km * 10 # First class: more expensive, e.g., 10 times the base price
+            second_class_price = base_price_per_km * distance_km * 5 # Second class: mid-range, e.g., 5 times the base price
+            third_class_price = base_price_per_km * distance_km * 2 # Third class: cheapest, e.g., 2 times the base price
+        else:
+            # Define base ticket prices based on distance (longer distance = higher price)
+            base_price_per_km = 0.05  # base price in dollars per km
+            first_class_price = base_price_per_km * distance_km * 10 # First class: more expensive, e.g., 10 times the base price
+            second_class_price = base_price_per_km * distance_km * 5 # Second class: mid-range, e.g., 5 times the base price
+            third_class_price = base_price_per_km * distance_km * 2 # Third class: cheapest, e.g., 2 times the base price
+            
+        #####################################################################
+        # Calculate initial number of passengers for each class (rounding)
+        # If passenger number > 99
+
+        first_class_passengers = round(num_passengers * first_class_percentage)
+        second_class_passengers = round(num_passengers * second_class_percentage)
+        third_class_passengers = round(num_passengers * third_class_percentage)
+
+        # Ensure the total number of passengers adds up to num_passengers
+        total_passengers = first_class_passengers + second_class_passengers + third_class_passengers
+
+        # If there's a discrepancy, adjust the third class passengers (largest group)
+        if total_passengers != num_passengers:
+            adjustment = num_passengers - total_passengers
+            third_class_passengers += adjustment
+        percentage_sold = 0  # If more than 99 passengers
+        #####################################################################
+    df['Price'] = None
+    previous_surname = None
+    for index, row in df.iterrows():
+        current_surname = row['Surname'] # Select surname to apply same price to family members
+        departure_date = row['Departure_Time']
+        if num_passengers <= 99:
+            df = attribute_price_to_people(ticket_price, previous_surname, current_surname, df, index, departure_date)
+        else:
+            df = attribute_price_to_people(ticket_price, previous_surname, current_surname, df, index, departure_date)
+    
+        # Update the previous_surname for the next iteration
+        previous_surname = current_surname
+    # Return a dictionary with ticket prices for each class and the number of seats in each class
+    return df
+
+def attribute_price_to_people(ticket_price, previous_surname, current_surname, df, index, departure_date):
+    
+    if previous_surname is not None:
+        if current_surname == previous_surname:
+            print(f"Same surname as the last: {current_surname}")
+            discounted_price = df.loc[index, 'Price']
+            df.at[index, 'Price'] = discounted_price
+        else:
+            print(f"Different surname. Previous: {previous_surname}, Current: {current_surname}")
+            purchase_date = generate_random_purchase_date(departure_date)
+            df.at[index, 'purchase_date'] = purchase_date
+            discounted_price = compute_discount_price(ticket_price, purchase_date, departure_date)
+            df.at[index, 'Price'] = discounted_price
+    else:
+        print(f"First surname: {current_surname}")
+        purchase_date = generate_random_purchase_date(departure_date)
+        df.at[index, 'purchase_date'] = purchase_date
+        discounted_price = compute_discount_price(ticket_price, purchase_date, departure_date)
+        df.at[index, 'Price'] = discounted_price
+
+    return df
+
+# Function to generate a random purchase date between 90 days before departure and the departure date
+def generate_random_purchase_date(departure_date):
+    # Generate a random number of days before the departure (between 1 and 90 days)
+    days_before_departure = random.randint(1, 90)
+    # Calculate the purchase date by subtracting the random number of days from the departure date
+    purchase_date = departure_date - timedelta(days=days_before_departure)
+    return purchase_date
+
+def compute_discount_price(base_price, purchase_date, departure_date):
+    # Calculate the number of days between purchase and departure
+    days_until_departure = (departure_date - purchase_date).days
+
+    # Apply discounts based on the number of days before departure
+    if 90 >= days_until_departure >= 75:
+        return base_price * 0.40  # 60% discount
+    elif 74 >= days_until_departure >= 60:
+        return base_price * 0.50  # 50% discount
+    elif 59 >= days_until_departure >= 45:
+        return base_price * 0.70  # 30% discount
+    else:
+        return base_price  # No discount, full price
+    
+# Function to generate a random purchase date between 90 days before departure and the departure date
+def generate_random_purchase_date(departure_date):
+    # Generate a random number of days before the departure (between 1 and 90 days)
+    days_before_departure = random.randint(1, 90)
+    # Calculate the purchase date by subtracting the random number of days from the departure date
+    purchase_date = departure_date - timedelta(days=days_before_departure)
+    return purchase_date
+
+def compute_dicount_price(base_price, purchase_date, departure_date):
+    # Calculate the number of days between purchase and departure
+    days_until_departure = (departure_date - purchase_date).days
+
+    # Apply discounts based on the number of days before departure
+    if 90 >= days_until_departure >= 75:
+        return base_price * 0.40  # 60% discount
+    elif 74 >= days_until_departure >= 60:
+        return base_price * 0.50  # 50% discount
+    elif 59 >= days_until_departure >= 45:
+        return base_price * 0.70  # 30% discount
+    else:
+        return base_price  # No discount, full price
+
 # Compute the consumption of fuel
-def calculate_fuel_cost(weighKG, gas_price_per_gallon, flight_distance_km, num_people=0, avg_weight_per_person=75, efficiency_constant=15):
+def compute_fuel_cost(weighKG, gas_price_per_gallon, flight_distance_km, num_people=0, avg_weight_per_person=75, efficiency_constant=15):
     """
     Calculates the total fuel cost for a flight.
 
@@ -287,7 +444,7 @@ num_people = 300  # number of passengers
 avg_weight_per_person = 75  # average weight of a person in kg
 efficiency_constant = 15  # a typical value for a large commercial plane
 
-fuel_cost, fuel_volume_gallons = calculate_fuel_cost(weighKG, gas_price_per_gallon, flight_distance_km, num_people, avg_weight_per_person, efficiency_constant)
+fuel_cost, fuel_volume_gallons = compute_fuel_cost(weighKG, gas_price_per_gallon, flight_distance_km, num_people, avg_weight_per_person, efficiency_constant)
 
 print(f"Total fuel cost: ${fuel_cost:.2f}")
 print(f"Total fuel volume: {fuel_volume_gallons:.2f} gallons")

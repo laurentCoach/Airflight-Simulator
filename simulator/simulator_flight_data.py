@@ -83,8 +83,10 @@ if __name__ == "__main__":
         Column('Model', String(255)),
         Column('Manufacturer', String(255)),
         Column('RangeKM', Integer),
-        Column('Capacity', Integer),
+        Column('PassengerCapacity', Integer),
         Column('CruisingSpeedKPH', Integer),
+        Column('WeightKG', Integer),
+        Column('TankCapacityInGallon', Integer),
         Column('CompanyID', Integer)
     )
     # Define the 'Flight' table
@@ -163,10 +165,6 @@ if __name__ == "__main__":
             # Get passenger number
             passenger_number = get_passenger_number(plane_code)
             #print(f"Number of passengers in the fligt is {passenger_number}. The plane capacity is {plane_code[4]}")
-            
-            # Get the passenger information
-            fake = Faker()
-            passenger_df = generate_passengers_information(fake, passenger_number)
                     
             # Get the current departure time
             departure_time = get_current_time()
@@ -175,7 +173,13 @@ if __name__ == "__main__":
             # Calculate the arrival time
             arrival_time = calculate_arrival_time(departure_time, flight_time)
             #print(f"Estimated arrival time: {arrival_time}")
-
+            
+            # Generate/Get the passenger information
+            fake = Faker()
+            passenger_df = generate_passengers_information(fake, passenger_number)
+            #Compute ticket price
+            passenger_df = compute_ticket_price(passenger_number, distance, departure_time, passenger_df)
+            
             
             # Insert data in Flight Table
             if insert_in_db == 'yes':
