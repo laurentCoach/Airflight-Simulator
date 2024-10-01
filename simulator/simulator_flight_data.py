@@ -14,7 +14,7 @@ import sys
 import argparse
 from faker import Faker # Generate fake Name/Surname/Phone/Gender
 import pandas as pd
-from functions import *
+from functions import * # Import functions from functions.py
 
 
 
@@ -112,6 +112,7 @@ if __name__ == "__main__":
         Column('PhoneNumber', String(10)),
         Column('Mail', String(255), nullable=False),
         Column('Gender', String(255), nullable=False),
+        Column('TicketPriceDollar', Integer),
         Column('FlightID', Integer)
     )
     # Define the 'Company_Income' table
@@ -125,11 +126,11 @@ if __name__ == "__main__":
     )
     # Define the 'Consumption' table
     consumption_table = Table(
-        'Passenger', metadata,
+        'Consumption', metadata,
         Column('ConsumptionID', Integer, primary_key=True, autoincrement=True),
-        Column('GasPrice', Integer),
-        Column('GasConsumption', Integer),
-        Column('TotalTankPrice', Integer),
+        Column('BarrelPriceDollar', Integer),
+        Column('TotalFuelPriceDollar', Integer),
+        Column('TotalFuelVolumeGallons', Integer),
         Column('FlightID', Integer)
     )
         
@@ -147,7 +148,7 @@ if __name__ == "__main__":
             #print(f"The airport departure is {airport_departure[1]} and airport arrival is {airport_arrival[1]}.")
 
             # Calculate the distance between the two randomly selected airports
-            distance = calculate_distance_between_airports(airport_departure, airport_arrival)
+            flight_distance_km = calculate_distance_between_airports(airport_departure, airport_arrival)
             #print(f"The distance between {airport_departure[1]} and {airport_arrival[1]} is {distance} kilometers.")
             
             # Get the departure country and the arrival country
@@ -156,10 +157,10 @@ if __name__ == "__main__":
             #print(f"Country Departure is {country_departure} and country arrival is {country_arrival}.")
             
             # Select a plane with sufficient range
-            plane_code = select_plane_with_sufficient_range(engine, plane_table, distance)
+            plane_code = select_plane_with_sufficient_range(engine, plane_table, flight_distance_km)
             #print(f"The selected plane is {plane_code[1]} with a cruising speed of {plane_code[5]} km/h.")
-            
-            flight_time = calculate_flight_time(distance, plane_code)
+
+            flight_time = calculate_flight_time(flight_distance_km, plane_code)
             #print(f"Estimated flight time for the distance {distance} km is {flight_time} minutes.")
 
             # Get passenger number
@@ -178,8 +179,13 @@ if __name__ == "__main__":
             fake = Faker()
             passenger_df = generate_passengers_information(fake, passenger_number)
             #Compute ticket price
-            passenger_df = compute_ticket_price(passenger_number, distance, departure_time, passenger_df)
-            
+            passenger_df = compute_ticket_price(passenger_number, flight_distance_km, departure_time, passenger_df)
+
+            # Compute Plane Consuption
+            # Get Current Oil Price
+            data = bmdOilPriceFetch.bmdPriceFetch() 
+            Oil_Price = data['regularMarketPrice']
+            TotalFuelPrice_, TotalFuelVolumeGallons_ = compute_fuel_cost(plane_code[6], get_oil_price(), flight_distance_km, passenger_number, 75, 15)
             
             # Insert data in Flight Table
             if insert_in_db == 'yes':
@@ -188,7 +194,7 @@ if __name__ == "__main__":
                 AirportArrival_ = airport_arrival[0]
                 TimeDeparture_ = departure_time
                 TimeArrival_ = arrival_time
-                Distance_ = distance
+                Distance_ = flight_distance_km
                 FlightTimeMinutes_ = flight_time
                 NbPassenger_ = passenger_number
                 PlaneID_ = plane_code[0]
@@ -205,13 +211,20 @@ if __name__ == "__main__":
                                                                 )
                     result = conn.execute(insert_query)
                     new_flight_id = result.lastrowid
-                    conn.commit()                        
                     
                     # Insert Passenger Information
                     passenger_df['FlightID'] = new_flight_id  # Add FlightID in dataframe
-                    passenger_df = passenger_df[['Name', 'Surname', 'PhoneNumber', 'Mail', 'Gender', 'FlightID']]  # Reorder the columns to match the specified order
+                    passenger_df = passenger_df[['Name', 'Surname', 'PhoneNumber', 'Mail', 'Gender', 'TicketPriceDollar', 'FlightID']]  # Reorder the columns to match the specified order
                     data = passenger_df.to_dict(orient='records')  # Convert DataFrame to a list of dictionaries
                     conn.execute(passenger_table.insert(), data)
+                    
+                    # Insert Consumption Information
+                    insert_query = insert(consumption_table).values(BarrelPriceDollar=get_oil_price(), 
+                                                                TotalFuelPriceDollar=TotalFuelPrice_,
+                                                                TotalFuelVolumeGallons=TotalFuelVolumeGallons_,
+                                                                FlightID=new_flight_id
+                                                                )
+                    conn.execute(insert_query)
                     conn.commit()
                     conn.close()
                     print(f"Data properly inserted!")

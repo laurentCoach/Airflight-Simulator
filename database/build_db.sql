@@ -78,10 +78,11 @@ CREATE TABLE Passenger (
     PhoneNumber VARCHAR(10) NOT NULL,
     Mail VARCHAR(255) NOT NULL,
     Gender VARCHAR(255) NOT NULL,
+    TicketPriceDollar FLOAT,
     FlightID INT NOT NULL,
     FOREIGN KEY (FlightID) REFERENCES Flight(FlightID) ON DELETE CASCADE
 );
-
+/*
 -- Create the Person table
 CREATE TABLE Ticket (
     TicketID INT AUTO_INCREMENT PRIMARY KEY,  -- Auto-increment primary key
@@ -89,13 +90,13 @@ CREATE TABLE Ticket (
     PassengerID INT NOT NULL,
     FOREIGN KEY (PassengerID) REFERENCES Passenger(PassengerID) ON DELETE CASCADE
 );
-
+*/
 -- Create the Consumption table
 CREATE TABLE Consumption (
     ConsumptionID INT AUTO_INCREMENT PRIMARY KEY,  -- Auto-increment primary key
-    GasPriceDollar FLOAT NOT NULL, -- Scrap in Real time
-    GasConsumption FLOAT NOT NULL, -- Consumption per person, km, and flight
-    TotalTankPrice FLOAT NOT NULL, -- Full Price to fill a tank plane
+    BarrelPriceDollar FLOAT NOT NULL, -- Scrap in Real time
+    TotalFuelPriceDollar FLOAT NOT NULL, -- Consumption per person, km, and flight
+    TotalFuelVolumeGallons FLOAT NOT NULL, -- Full Price to fill a tank plane
     FlightID INT NOT NULL,
     FOREIGN KEY (FlightID) REFERENCES Flight(FlightID) ON DELETE CASCADE
 );

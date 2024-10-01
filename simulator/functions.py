@@ -14,6 +14,8 @@ import sys
 import argparse
 from faker import Faker # Generate fake Name/Surname/Phone/Gender
 import pandas as pd
+import bmdOilPriceFetch # Get Current Oil price --> https://pypi.org/project/bmdOilPriceFetch/
+
 
 
 def generate_random_code():
@@ -242,7 +244,7 @@ def generate_passengers_information(fake, num_passengers):
     return passengers_df
 
 # Compute ticket price
-def compute_ticket_price(num_passengers, distance_km, departure_time, df, departure_init):
+def compute_ticket_price(num_passengers, distance_km, departure_time, df):
     """
     Compute ticket prices based on aircraft capacity, distance, and class distribution.
 
@@ -300,6 +302,7 @@ def compute_ticket_price(num_passengers, distance_km, departure_time, df, depart
             second_class_price = base_price_per_km * distance_km * 5 # Second class: mid-range, e.g., 5 times the base price
             third_class_price = base_price_per_km * distance_km * 2 # Third class: cheapest, e.g., 2 times the base price
             
+
         #####################################################################
         # Calculate initial number of passengers for each class (rounding)
         # If passenger number > 99
@@ -315,42 +318,44 @@ def compute_ticket_price(num_passengers, distance_km, departure_time, df, depart
         if total_passengers != num_passengers:
             adjustment = num_passengers - total_passengers
             third_class_passengers += adjustment
-        percentage_sold = 0  # If more than 99 passengers
+        
         #####################################################################
-    df['Price'] = None
+    df['TicketPriceDollar'] = None
     previous_surname = None
+    count_sold = 0  # If more than 99 passengers
     for index, row in df.iterrows():
         current_surname = row['Surname'] # Select surname to apply same price to family members
         departure_date = row['Departure_Time']
         if num_passengers <= 99:
             df = attribute_price_to_people(ticket_price, previous_surname, current_surname, df, index, departure_date)
         else:
-            df = attribute_price_to_people(ticket_price, previous_surname, current_surname, df, index, departure_date)
-    
+            if count_sold <= first_class_passengers:
+                df = attribute_price_to_people(first_class_price, previous_surname, current_surname, df, index, departure_date)
+            elif count_sold > first_class_passengers and count_sold <= second_class_passengers:
+                df = attribute_price_to_people(second_class_price, previous_surname, current_surname, df, index, departure_date)
+            elif count_sold > second_class_passengers and count_sold <= third_class_passengers:
+                df = attribute_price_to_people(third_class_price, previous_surname, current_surname, df, index, departure_date)
+        
         # Update the previous_surname for the next iteration
         previous_surname = current_surname
     # Return a dictionary with ticket prices for each class and the number of seats in each class
     return df
 
 def attribute_price_to_people(ticket_price, previous_surname, current_surname, df, index, departure_date):
-    
     if previous_surname is not None:
         if current_surname == previous_surname:
-            print(f"Same surname as the last: {current_surname}")
-            discounted_price = df.loc[index, 'Price']
-            df.at[index, 'Price'] = discounted_price
+            discounted_price = df.loc[index, 'TicketPriceDollar']
+            df.at[index, 'TicketPriceDollar'] = discounted_price
         else:
-            print(f"Different surname. Previous: {previous_surname}, Current: {current_surname}")
             purchase_date = generate_random_purchase_date(departure_date)
             df.at[index, 'purchase_date'] = purchase_date
             discounted_price = compute_discount_price(ticket_price, purchase_date, departure_date)
-            df.at[index, 'Price'] = discounted_price
+            df.at[index, 'TicketPriceDollar'] = discounted_price
     else:
-        print(f"First surname: {current_surname}")
         purchase_date = generate_random_purchase_date(departure_date)
         df.at[index, 'purchase_date'] = purchase_date
         discounted_price = compute_discount_price(ticket_price, purchase_date, departure_date)
-        df.at[index, 'Price'] = discounted_price
+        df.at[index, 'TicketPriceDollar'] = discounted_price
 
     return df
 
@@ -398,13 +403,23 @@ def compute_dicount_price(base_price, purchase_date, departure_date):
     else:
         return base_price  # No discount, full price
 
+# Get Oil Price per Gallon
+def get_oil_price():
+    data = bmdOilPriceFetch.bmdPriceFetch()
+    # Get the price of oil per barrel
+    price_per_barrel = data['regularMarketPrice']
+    # Convert to price per gallon (1 barrel = 42 gallons)
+    price_per_gallon = price_per_barrel / 42
+    return price_per_gallon
+
+
 # Compute the consumption of fuel
-def compute_fuel_cost(weighKG, gas_price_per_gallon, flight_distance_km, num_people=0, avg_weight_per_person=75, efficiency_constant=15):
+def compute_fuel_cost(weight_kg, gas_price_per_gallon, flight_distance_km, num_people, avg_weight_per_person, efficiency_constant=15):
     """
     Calculates the total fuel cost for a flight.
 
     Parameters:
-    - weighKG: Weight of the plane in kilograms.
+    - weight_kg: Weight of the plane in kilograms.
     - gas_price_per_gallon: Price of fuel per gallon.
     - flight_distance_km: The distance of the flight in kilometers.
     - num_people: Number of passengers (default is 0 if not provided).
@@ -416,35 +431,24 @@ def compute_fuel_cost(weighKG, gas_price_per_gallon, flight_distance_km, num_peo
     - fuel_volume_gallons: The total fuel volume required in gallons.
     """
 
-    # Adjust weight to include passengers (optional)
-    total_weight = weighKG + (num_people * avg_weight_per_person)
+    # 1. Adjust weight to include passengers
+    total_weight = weight_kg + (num_people * avg_weight_per_person)
 
-    # Calculate fuel consumption (kg per km)
-    fuel_consumption_per_km = total_weight / efficiency_constant
+    # 2. Calculate fuel consumption per kilometer (based on total weight and efficiency)
+    fuel_consumption_per_km = total_weight / efficiency_constant  # in kg/km
 
-    # Calculate the total fuel needed for the flight in kg
+    # 3. Total fuel needed for the flight in kilograms
     total_fuel_kg = fuel_consumption_per_km * flight_distance_km
 
-    # Convert fuel from kg to liters (1 liter = 0.8 kg)
+    # 4. Convert fuel from kg to liters (using a standard conversion factor for jet fuel: 1 liter = 0.8 kg)
     total_fuel_liters = total_fuel_kg / 0.8
 
-    # Convert liters to gallons (1 gallon = 3.785 liters)
+    # 5. Convert liters to gallons (1 gallon = 3.785 liters)
     total_fuel_gallons = total_fuel_liters / 3.785
 
-    # Calculate total fuel cost
+    # 6. Calculate the total fuel cost
     total_fuel_cost = total_fuel_gallons * gas_price_per_gallon
 
     return total_fuel_cost, total_fuel_gallons
 
-# Example usage
-weighKG = 277000  # weight of a Boeing 777-200LR in kg
-gas_price_per_gallon = 4.50  # example gas price per gallon
-flight_distance_km = 14800  # flight distance (max range of a 777-200LR in km)
-num_people = 300  # number of passengers
-avg_weight_per_person = 75  # average weight of a person in kg
-efficiency_constant = 15  # a typical value for a large commercial plane
 
-fuel_cost, fuel_volume_gallons = compute_fuel_cost(weighKG, gas_price_per_gallon, flight_distance_km, num_people, avg_weight_per_person, efficiency_constant)
-
-print(f"Total fuel cost: ${fuel_cost:.2f}")
-print(f"Total fuel volume: {fuel_volume_gallons:.2f} gallons")
