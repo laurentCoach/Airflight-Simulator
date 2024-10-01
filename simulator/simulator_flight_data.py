@@ -113,6 +113,7 @@ if __name__ == "__main__":
         Column('Mail', String(255), nullable=False),
         Column('Gender', String(255), nullable=False),
         Column('TicketPriceDollar', Integer),
+        Column('PurchaseDate', DateTime),
         Column('FlightID', Integer)
     )
     # Define the 'Company_Income' table
@@ -214,7 +215,8 @@ if __name__ == "__main__":
                     
                     # Insert Passenger Information
                     passenger_df['FlightID'] = new_flight_id  # Add FlightID in dataframe
-                    passenger_df = passenger_df[['Name', 'Surname', 'PhoneNumber', 'Mail', 'Gender', 'TicketPriceDollar', 'FlightID']]  # Reorder the columns to match the specified order
+                    passenger_df = passenger_df[['Name', 'Surname', 'PhoneNumber', 'Mail', 'Gender', 'TicketPriceDollar', 'PurchaseDate', 'FlightID']]  # Reorder the columns to match the specified order
+                    passenger_df['PurchaseDate'] = pd.to_datetime(passenger_df['PurchaseDate'], format="%Y/%m/%d %H:%M:%S")
                     data = passenger_df.to_dict(orient='records')  # Convert DataFrame to a list of dictionaries
                     conn.execute(passenger_table.insert(), data)
                     

@@ -79,6 +79,7 @@ CREATE TABLE Passenger (
     Mail VARCHAR(255) NOT NULL,
     Gender VARCHAR(255) NOT NULL,
     TicketPriceDollar FLOAT,
+    PurchaseDate DATETIME,
     FlightID INT NOT NULL,
     FOREIGN KEY (FlightID) REFERENCES Flight(FlightID) ON DELETE CASCADE
 );

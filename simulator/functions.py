@@ -318,8 +318,8 @@ def compute_ticket_price(num_passengers, distance_km, departure_time, df):
         if total_passengers != num_passengers:
             adjustment = num_passengers - total_passengers
             third_class_passengers += adjustment
-        
         #####################################################################
+        
     df['TicketPriceDollar'] = None
     previous_surname = None
     count_sold = 0  # If more than 99 passengers
@@ -327,49 +327,43 @@ def compute_ticket_price(num_passengers, distance_km, departure_time, df):
         current_surname = row['Surname'] # Select surname to apply same price to family members
         departure_date = row['Departure_Time']
         if num_passengers <= 99:
-            df = attribute_price_to_people(ticket_price, previous_surname, current_surname, df, index, departure_date)
+            df = attribute_price_to_passenger(ticket_price, previous_surname, current_surname, df, index, departure_date)
         else:
             if count_sold <= first_class_passengers:
-                df = attribute_price_to_people(first_class_price, previous_surname, current_surname, df, index, departure_date)
+                df = attribute_price_to_passenger(first_class_price, previous_surname, current_surname, df, index, departure_date)
             elif count_sold > first_class_passengers and count_sold <= second_class_passengers:
-                df = attribute_price_to_people(second_class_price, previous_surname, current_surname, df, index, departure_date)
+                df = attribute_price_to_passenger(second_class_price, previous_surname, current_surname, df, index, departure_date)
             elif count_sold > second_class_passengers and count_sold <= third_class_passengers:
-                df = attribute_price_to_people(third_class_price, previous_surname, current_surname, df, index, departure_date)
+                df = attribute_price_to_passenger(third_class_price, previous_surname, current_surname, df, index, departure_date)
         
         # Update the previous_surname for the next iteration
         previous_surname = current_surname
     # Return a dictionary with ticket prices for each class and the number of seats in each class
     return df
 
-def attribute_price_to_people(ticket_price, previous_surname, current_surname, df, index, departure_date):
+def attribute_price_to_passenger(ticket_price, previous_surname, current_surname, df, index, departure_date):
     if previous_surname is not None:
         if current_surname == previous_surname:
-            discounted_price = df.loc[index, 'TicketPriceDollar']
+            PurchaseDate = str(df.loc[index-1, 'PurchaseDate']) # Get n-1 Value
+            df.at[index, 'PurchaseDate'] = PurchaseDate 
+            discounted_price = df.loc[index-1, 'TicketPriceDollar'] # Get n-1 Value
             df.at[index, 'TicketPriceDollar'] = discounted_price
         else:
-            purchase_date = generate_random_purchase_date(departure_date)
-            df.at[index, 'purchase_date'] = purchase_date
-            discounted_price = compute_discount_price(ticket_price, purchase_date, departure_date)
+            PurchaseDate = generate_random_purchase_date(departure_date)
+            df.at[index, 'PurchaseDate'] = PurchaseDate
+            discounted_price = compute_discount_price(ticket_price, PurchaseDate, departure_date)
             df.at[index, 'TicketPriceDollar'] = discounted_price
     else:
-        purchase_date = generate_random_purchase_date(departure_date)
-        df.at[index, 'purchase_date'] = purchase_date
-        discounted_price = compute_discount_price(ticket_price, purchase_date, departure_date)
+        PurchaseDate = generate_random_purchase_date(departure_date)
+        df.at[index, 'PurchaseDate'] = PurchaseDate
+        discounted_price = compute_discount_price(ticket_price, PurchaseDate, departure_date)
         df.at[index, 'TicketPriceDollar'] = discounted_price
 
     return df
 
-# Function to generate a random purchase date between 90 days before departure and the departure date
-def generate_random_purchase_date(departure_date):
-    # Generate a random number of days before the departure (between 1 and 90 days)
-    days_before_departure = random.randint(1, 90)
-    # Calculate the purchase date by subtracting the random number of days from the departure date
-    purchase_date = departure_date - timedelta(days=days_before_departure)
-    return purchase_date
-
-def compute_discount_price(base_price, purchase_date, departure_date):
+def compute_discount_price(base_price, PurchaseDate, departure_date):
     # Calculate the number of days between purchase and departure
-    days_until_departure = (departure_date - purchase_date).days
+    days_until_departure = (departure_date - PurchaseDate).days
 
     # Apply discounts based on the number of days before departure
     if 90 >= days_until_departure >= 75:
@@ -386,22 +380,9 @@ def generate_random_purchase_date(departure_date):
     # Generate a random number of days before the departure (between 1 and 90 days)
     days_before_departure = random.randint(1, 90)
     # Calculate the purchase date by subtracting the random number of days from the departure date
-    purchase_date = departure_date - timedelta(days=days_before_departure)
-    return purchase_date
+    PurchaseDate = departure_date - timedelta(days=days_before_departure)
+    return PurchaseDate
 
-def compute_dicount_price(base_price, purchase_date, departure_date):
-    # Calculate the number of days between purchase and departure
-    days_until_departure = (departure_date - purchase_date).days
-
-    # Apply discounts based on the number of days before departure
-    if 90 >= days_until_departure >= 75:
-        return base_price * 0.40  # 60% discount
-    elif 74 >= days_until_departure >= 60:
-        return base_price * 0.50  # 50% discount
-    elif 59 >= days_until_departure >= 45:
-        return base_price * 0.70  # 30% discount
-    else:
-        return base_price  # No discount, full price
 
 # Get Oil Price per Gallon
 def get_oil_price():
@@ -444,7 +425,7 @@ def compute_fuel_cost(weight_kg, gas_price_per_gallon, flight_distance_km, num_p
     total_fuel_liters = total_fuel_kg / 0.8
 
     # 5. Convert liters to gallons (1 gallon = 3.785 liters)
-    total_fuel_gallons = total_fuel_liters / 3.785
+    total_fuel_gallons = total_fuel_liters / 3.78541
 
     # 6. Calculate the total fuel cost
     total_fuel_cost = total_fuel_gallons * gas_price_per_gallon
