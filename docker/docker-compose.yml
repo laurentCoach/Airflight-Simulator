@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: airflight_mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456789
+      MYSQL_DATABASE: AIRFLIGHT_DB
+      MYSQL_USER: laurent
+      MYSQL_PASSWORD: 123456789
+    ports:
+      - "3307:3306"
+    volumes:
+      - airflight_db_data:/var/lib/mysql    # Persistent volume for MySQL data
+      - /home/laurent/docker/airflight_project/Airflight-Simulator/database/build_db.sql:/docker-entrypoint-initdb.d/build_db.sql  # Run your build_db.sql script on startup
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'  # Limit container to 25% of available CPU
+          memory: 512M  # Limit memory to 512MB
+
+volumes:
+  airflight_db_data:
+    driver: local

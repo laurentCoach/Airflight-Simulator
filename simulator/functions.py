@@ -16,15 +16,47 @@ from faker import Faker # Generate fake Name/Surname/Phone/Gender
 import pandas as pd
 import bmdOilPriceFetch # Get Current Oil price --> https://pypi.org/project/bmdOilPriceFetch/
 
+# Establish connection to the database
+def connect_db():
+    # Connect to the database
+    # Database connection configuration
+    DATABASE_TYPE = 'mysql'
+    DBAPI = 'mysql+mysqlconnector'  # Adjust based on your SQLAlchemy version
+    ENDPOINT = 'localhost'
+    PORT = 3306
+    USER = 'laurent'  # Replace with your actual MySQL username
+    PASSWORD = '123456789'  # Replace with your actual MySQL password
+    DATABASE = 'AIRFLIGHT_DB' # Replace with your actual MySQL DATABASE NAME
 
+    # Construct the SQLAlchemy URL
+    db_url = f"{DBAPI}://{USER}:{PASSWORD}@{ENDPOINT}:{PORT}/{DATABASE}"
 
-def generate_random_code():
-    # Generate two random parts, each with 6 characters (uppercase letters and digits)
-    part1 = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
-    part2 = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+    print("Connecting to database with URL:", db_url)
+
+    # Create database connection
+    try:
+        engine = create_engine(db_url)
+        print("Database connection successful")
+        return engine
+    except Exception as e:
+        print("Error connecting to database:", str(e))
+
+def generate_random_code(conn, plane_information, company_table):
+    plane_information = list(plane_information)
+    # Query to select all planes with sufficient range
+    query = select(company_table).where(company_table.c.CompanyID == plane_information[-1]) 
+
+    # Execute the query 
+    with conn.connect() as connection:
+        result = connection.execute(query)
+        for commpany_ in result:
+            commpany_ = list(commpany_)
+    IATACode = commpany_[3]
+    # Generate one random part, with 10 characters (uppercase letters and digits)
+    ten_digits = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
     
     # Combine the two parts with a hyphen
-    return f"{part1}-{part2}"
+    return f"{IATACode}:{ten_digits}"
 
 def get_airport_info(airport_code, airports):
     """
@@ -119,6 +151,36 @@ def calculate_flight_time(distance, plane_code):
     flight_time = distance / speed
     flight_time_in_minutes = int(flight_time * 60)
     return flight_time_in_minutes
+
+def get_random_departure_time():
+    """
+    Generate a random date between the years 1970 and 2024.
+    Ensure that the hour is not between midnight (00:00) and 6AM.
+    
+    Returns:
+        A string representing the random date and time in the format yyyy/mm/dd hh:mm:ss.
+    """
+    # Define the date range (from January 1, 1970 to December 31, 2024)
+    start_date = datetime(1970, 1, 1)
+    end_date = datetime(2024, 12, 31)
+
+    # Get the total seconds between the start and end dates
+    delta_seconds = (end_date - start_date).total_seconds()
+    # Generate a random number of seconds between start_date and end_date
+    random_seconds = random.randint(0, int(delta_seconds))
+    # Create a random date by adding the random seconds to start_date
+    random_date = start_date + timedelta(seconds=random_seconds)
+
+    # Ensure the time is not between midnight (00:00) and 6AM
+    random_hour = random.randint(6, 23)  # Generate hours between 6AM and 11:59PM
+    random_minute = random.randint(0, 59)
+    random_second = random.randint(0, 59)
+
+    # Replace the hour, minute, and second in the random date
+    random_date = random_date.replace(hour=random_hour, minute=random_minute, second=random_second)
+
+    # Return the formatted date and time
+    return random_date.strftime("%Y/%m/%d %H:%M:%S")
 
 def get_current_time():
     """
@@ -414,19 +476,14 @@ def compute_fuel_cost(weight_kg, gas_price_per_gallon, flight_distance_km, num_p
 
     # 1. Adjust weight to include passengers
     total_weight = weight_kg + (num_people * avg_weight_per_person)
-
     # 2. Calculate fuel consumption per kilometer (based on total weight and efficiency)
     fuel_consumption_per_km = total_weight / efficiency_constant  # in kg/km
-
     # 3. Total fuel needed for the flight in kilograms
     total_fuel_kg = fuel_consumption_per_km * flight_distance_km
-
     # 4. Convert fuel from kg to liters (using a standard conversion factor for jet fuel: 1 liter = 0.8 kg)
     total_fuel_liters = total_fuel_kg / 0.8
-
     # 5. Convert liters to gallons (1 gallon = 3.785 liters)
     total_fuel_gallons = total_fuel_liters / 3.78541
-
     # 6. Calculate the total fuel cost
     total_fuel_cost = total_fuel_gallons * gas_price_per_gallon
 

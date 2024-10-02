@@ -2,11 +2,13 @@
 -- source /home/laurent/docker/airflight_project/Airflight-Simulator/database/build_db.sql
 -- DROP DATABASE AIRFLIGHT_DB;
 
+DROP DATABASE IF EXISTS AIRFLIGHT_DB;
+
 -- Create the database
 CREATE DATABASE AIRFLIGHT_DB;
 
 -- Give Access
-GRANT SELECT, INSERT, UPDATE, DELETE ON AIRFLIGHT_DB.* TO 'laurent'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON AIRFLIGHT_DB.* TO 'laurent'@'localhost';
 
 -- Switch to the new database
 USE AIRFLIGHT_DB;
@@ -75,7 +77,7 @@ CREATE TABLE Passenger (
     PassengerID INT AUTO_INCREMENT PRIMARY KEY,  -- Auto-increment primary key
     Name VARCHAR(255) NOT NULL,
     Surname VARCHAR(255) NOT NULL,
-    PhoneNumber VARCHAR(10) NOT NULL,
+    PhoneNumber VARCHAR(255) NOT NULL,
     Mail VARCHAR(255) NOT NULL,
     Gender VARCHAR(255) NOT NULL,
     TicketPriceDollar FLOAT,

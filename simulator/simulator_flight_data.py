@@ -3,19 +3,14 @@ Author : Laurent Cesaro
 Topic : Python file to insert data in the database
 """
 
-import math
-import json
-import random, string
 from datetime import datetime, timedelta
 import airportsdata
-import pycountry
 from sqlalchemy import create_engine, DateTime, text, insert, Table, Column, Float, String, Integer, DateTime, Boolean, MetaData, select
 import sys
 import argparse
 from faker import Faker # Generate fake Name/Surname/Phone/Gender
 import pandas as pd
 from functions import * # Import functions from functions.py
-
 
 
 # Main execution
@@ -35,29 +30,10 @@ if __name__ == "__main__":
     number_of_flights = args.nb_f
     
     # Connect to the database
-    # Database connection configuration
-    DATABASE_TYPE = 'mysql'
-    DBAPI = 'mysql+mysqlconnector'  # Adjust based on your SQLAlchemy version
-    ENDPOINT = 'localhost'
-    PORT = 3306
-    USER = 'laurent'  # Replace with your actual MySQL username
-    PASSWORD = '123456789'  # Replace with your actual MySQL password
-    DATABASE = 'AIRFLIGHT_DB' # Replace with your actual MySQL DATABASE NAME
-
-    # Construct the SQLAlchemy URL
-    db_url = f"{DBAPI}://{USER}:{PASSWORD}@{ENDPOINT}:{PORT}/{DATABASE}"
-
-    print("Connecting to database with URL:", db_url)
-
-    # Create database connection
-    try:
-        engine = create_engine(db_url)
-        print("Database connection successful")
-    except Exception as e:
-        print("Error connecting to database:", str(e))
+    engine = connect_db()
+    
     # Define metadata
     metadata = MetaData()
-
     # Define the 'Airport' table
     airport_table = Table(
         'Airport', metadata,
@@ -140,10 +116,6 @@ if __name__ == "__main__":
     
     for i in range(number_of_flights):
         try:
-            # Get the flight code
-            FlightCode_ = generate_random_code()
-            #print(f"The flight code is {FlightCode_}.")
-            
             # Select two random airports from database
             airport_departure, airport_arrival = select_two_random_airports(engine)
             #print(f"The airport departure is {airport_departure[1]} and airport arrival is {airport_arrival[1]}.")
@@ -159,6 +131,9 @@ if __name__ == "__main__":
             
             # Select a plane with sufficient range
             plane_code = select_plane_with_sufficient_range(engine, plane_table, flight_distance_km)
+            
+            # Generate the flight code
+            FlightCode_ = generate_random_code(engine, plane_code, company_table)
             #print(f"The selected plane is {plane_code[1]} with a cruising speed of {plane_code[5]} km/h.")
 
             flight_time = calculate_flight_time(flight_distance_km, plane_code)
@@ -169,7 +144,7 @@ if __name__ == "__main__":
             #print(f"Number of passengers in the fligt is {passenger_number}. The plane capacity is {plane_code[4]}")
                     
             # Get the current departure time
-            departure_time = get_current_time()
+            departure_time = get_random_departure_time()
             #print(f"Departure time: {departure_time}")
             
             # Calculate the arrival time

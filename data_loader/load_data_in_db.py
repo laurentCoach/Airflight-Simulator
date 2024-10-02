@@ -127,7 +127,7 @@ def main():
     DATABASE_TYPE = 'mysql'
     DBAPI = 'mysql+mysqlconnector'  # Adjust based on your SQLAlchemy version
     ENDPOINT = 'localhost'
-    PORT = 3306
+    PORT = 3307
     USER = 'laurent'  # Replace with your actual MySQL username
     PASSWORD = '123456789'  # Replace with your actual MySQL password
     DATABASE = 'AIRFLIGHT_DB'
