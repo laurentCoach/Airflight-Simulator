@@ -8,7 +8,7 @@ DROP DATABASE IF EXISTS AIRFLIGHT_DB;
 CREATE DATABASE AIRFLIGHT_DB;
 
 -- Give Access
--- GRANT SELECT, INSERT, UPDATE, DELETE ON AIRFLIGHT_DB.* TO 'laurent'@'localhost';
+GRANT SELECT, INSERT, UPDATE, DELETE ON AIRFLIGHT_DB.* TO 'laurent'@'localhost';
 
 -- Switch to the new database
 USE AIRFLIGHT_DB;
@@ -55,18 +55,29 @@ CREATE TABLE Plane (
     FOREIGN KEY (CompanyID) REFERENCES Company(CompanyID) ON DELETE CASCADE
 );
 
+-- Create the Plane Status table
+CREATE TABLE Plane_Status (
+    PlaneStatusID INT AUTO_INCREMENT PRIMARY KEY,
+    InFlight BOOLEAN,  -- Boolean to track if the plane is in flight (Yes or No)
+    AirportID INT NOT NULL,
+    FOREIGN KEY (AirportID) REFERENCES Airport(AirportID) ON DELETE CASCADE,
+    PlaneID INT NOT NULL,
+    FOREIGN KEY (PlaneID) REFERENCES Plane(PlaneID) ON DELETE CASCADE
+);
+
 -- Create the Flight table
 CREATE TABLE Flight (
     FlightID INT AUTO_INCREMENT PRIMARY KEY,  -- Auto-increment primary key
-    FlightCode VARCHAR(13) NOT NULL,
-    AirportDeparture INT,  -- Foreign key referencing AirportID in the Airport table
-    AirportArrival INT,    -- Foreign key referencing AirportID in the Airport table
-    TimeDeparture DATETIME NOT NULL,
-    TimeArrival DATETIME NOT NULL,
+    FlightCode VARCHAR(13),
+    FlightStatus BOOLEAN NOT NULL,  -- BOOLEAN YES->Done NO->ToDo
+    AirportDeparture INT NOT NULL,  -- Foreign key referencing AirportID in the Airport table
+    AirportArrival INT NOT NULL,    -- Foreign key referencing AirportID in the Airport table
+    TimeDeparture DATETIME,
+    TimeArrival DATETIME,
     Distance INT NOT NULL,
-    FlightTimeMinutes INT NOT NULL,
-    NbPassenger INT NOT NULL,
-    PlaneID INT NOT NULL,
+    FlightTimeMinutes INT,
+    NbPassenger INT,
+    PlaneID INT,
     FOREIGN KEY (PlaneID) REFERENCES Plane(PlaneID) ON DELETE CASCADE,
     FOREIGN KEY (AirportDeparture) REFERENCES Airport(AirportID) ON DELETE CASCADE,
     FOREIGN KEY (AirportArrival) REFERENCES Airport(AirportID) ON DELETE CASCADE

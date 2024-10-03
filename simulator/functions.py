@@ -118,24 +118,34 @@ def calculate_distance_between_airports(airport_dept, airport_arr):
     
     return distance
 
-def select_plane_with_sufficient_range(conn, plane_table, distance):
+def select_plane_with_sufficient_range(conn, plane_table, plane_status_table, airportID, distance):
     """
     Select a plane from the database that has a range greater than or equal to the given distance.
     """
     # Query to select all planes with sufficient range
-    query = select(plane_table).where(plane_table.c.RangeKM >= distance)
+    query = (
+        select(plane_table)
+        .select_from(
+            plane_status_table.join(plane_table, plane_table.c.PlaneID == plane_status_table.c.PlaneID)
+        )
+        .where(plane_table.c.RangeKM >= distance)  # Ensure plane has sufficient range
+        .where(plane_status_table.c.AirportID == airportID)  # Ensure plane is at the same airport
+        .where(plane_status_table.c.InFlight == False)  # Ensure plane is not in-flight
+    )
 
     # Execute the query
     with conn.connect() as connection:
         result = connection.execute(query)
         suitable_planes = result.fetchall()
-
+        
         if not suitable_planes:
-            raise ValueError("No plane with sufficient range found.")
-
-        # Select a random plane from the suitable planes
-        selected_plane = random.choice(suitable_planes)
-        return selected_plane
+            msg = "No plane with sufficient range found."
+            return msg
+        else:
+            # Select a random plane from the suitable planes
+            selected_plane = random.choice(suitable_planes)
+            return selected_plane
+        
 
 def calculate_flight_time(distance, plane_code):
     """

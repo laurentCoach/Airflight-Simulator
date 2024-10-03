@@ -5,7 +5,7 @@ Topic : Python file to insert data in the database
 
 from datetime import datetime, timedelta
 import airportsdata
-from sqlalchemy import create_engine, DateTime, text, insert, Table, Column, Float, String, Integer, DateTime, Boolean, MetaData, select
+from sqlalchemy import create_engine, DateTime, text, insert, Table, Column, Float, String, Integer, DateTime, Boolean, MetaData, select, update
 import sys
 import argparse
 from faker import Faker # Generate fake Name/Surname/Phone/Gender
@@ -16,6 +16,7 @@ from functions import * # Import functions from functions.py
 # Main execution
 if __name__ == "__main__":
     # Parse command-line arguments
+    """
     parser = argparse.ArgumentParser(description='Flight simulation and database insertion.')
     
     # Adding arguments
@@ -28,7 +29,7 @@ if __name__ == "__main__":
     # Use the provided arguments
     insert_in_db = args.db
     number_of_flights = args.nb_f
-    
+    """
     # Connect to the database
     engine = connect_db()
     
@@ -70,6 +71,7 @@ if __name__ == "__main__":
         'Flight', metadata,
         Column('FlightID', Integer, primary_key=True, autoincrement=True),
         Column('FlightCode', String(13)),
+        Column('FlightStatus', Boolean),
         Column('AirportDeparture', Integer),
         Column('AirportArrival', Integer),
         Column('TimeDeparture', DateTime),
@@ -109,35 +111,39 @@ if __name__ == "__main__":
         Column('TotalFuelPriceDollar', Integer),
         Column('TotalFuelVolumeGallons', Integer),
         Column('FlightID', Integer)
+    ) 
+    # Define the 'Plane' table
+    plane_status_table = Table(
+        'Plane_Status', metadata,
+        Column('PlaneStatusID', Integer, primary_key=True, autoincrement=True),
+        Column('InFlight', Boolean),
+        Column('AirportID', Integer),
+        Column('PlaneID', Integer)
     )
-        
+    
     # Load the airports database
     airports = airportsdata.load("IATA")
     
-    for i in range(number_of_flights):
-        try:
-            # Select two random airports from database
-            airport_departure, airport_arrival = select_two_random_airports(engine)
-            #print(f"The airport departure is {airport_departure[1]} and airport arrival is {airport_arrival[1]}.")
+    try:
+        query = select(flight_table).where(flight_table.c.FlightStatus == 0) 
+        with engine.connect() as connection:
+            result_filght = connection.execute(query)
 
-            # Calculate the distance between the two randomly selected airports
-            flight_distance_km = calculate_distance_between_airports(airport_departure, airport_arrival)
-            #print(f"The distance between {airport_departure[1]} and {airport_arrival[1]} is {distance} kilometers.")
+        
+        #for i in range(number_of_flights):
+        for flight_ in result_filght:
+            flight_ = list(flight_)  # convert tuple to list
+            flightID_ = flight_[0]
+            flight_distance_km = flight_[7]
+            airport_departure = flight_[3]
             
-            # Get the departure country and the arrival country
-            country_departure = get_airport_info(airport_departure[1], airports) # To delete
-            country_arrival = get_airport_info(airport_arrival[1], airports) # To delete
-            #print(f"Country Departure is {country_departure} and country arrival is {country_arrival}.")
-            
-            # Select a plane with sufficient range
-            plane_code = select_plane_with_sufficient_range(engine, plane_table, flight_distance_km)
-            
-            # Generate the flight code
+            plane_code = select_plane_with_sufficient_range(engine, plane_table, plane_status_table, airport_departure, flight_distance_km)
+            print(plane_code)
             FlightCode_ = generate_random_code(engine, plane_code, company_table)
             #print(f"The selected plane is {plane_code[1]} with a cruising speed of {plane_code[5]} km/h.")
-
+            
             flight_time = calculate_flight_time(flight_distance_km, plane_code)
-            #print(f"Estimated flight time for the distance {distance} km is {flight_time} minutes.")
+            #print(f"Estimated flight time for the distance {flight_distance_km} km is {flight_time} minutes.")
 
             # Get passenger number
             passenger_number = get_passenger_number(plane_code)
@@ -163,48 +169,52 @@ if __name__ == "__main__":
             Oil_Price = data['regularMarketPrice']
             TotalFuelPrice_, TotalFuelVolumeGallons_ = compute_fuel_cost(plane_code[6], get_oil_price(), flight_distance_km, passenger_number, 75, 15)
             
-            # Insert data in Flight Table
-            if insert_in_db == 'yes':
-                FlightCode_ = FlightCode_
-                AirportDeparture_ = airport_departure[0]
-                AirportArrival_ = airport_arrival[0]
-                TimeDeparture_ = departure_time
-                TimeArrival_ = arrival_time
-                Distance_ = flight_distance_km
-                FlightTimeMinutes_ = flight_time
-                NbPassenger_ = passenger_number
-                PlaneID_ = plane_code[0]
-                with engine.connect() as conn:
-                    insert_query = insert(flight_table).values(FlightCode=FlightCode_, 
-                                                                AirportDeparture=AirportDeparture_,
-                                                                AirportArrival=AirportArrival_,
-                                                                TimeDeparture=TimeDeparture_,
-                                                                TimeArrival=TimeArrival_,
-                                                                Distance=Distance_,
-                                                                FlightTimeMinutes=FlightTimeMinutes_,
-                                                                NbPassenger=NbPassenger_,
-                                                                PlaneID=PlaneID_
-                                                                )
-                    result = conn.execute(insert_query)
-                    new_flight_id = result.lastrowid
-                    
-                    # Insert Passenger Information
-                    passenger_df['FlightID'] = new_flight_id  # Add FlightID in dataframe
-                    passenger_df = passenger_df[['Name', 'Surname', 'PhoneNumber', 'Mail', 'Gender', 'TicketPriceDollar', 'PurchaseDate', 'FlightID']]  # Reorder the columns to match the specified order
-                    passenger_df['PurchaseDate'] = pd.to_datetime(passenger_df['PurchaseDate'], format="%Y/%m/%d %H:%M:%S")
-                    data = passenger_df.to_dict(orient='records')  # Convert DataFrame to a list of dictionaries
-                    conn.execute(passenger_table.insert(), data)
-                    
-                    # Insert Consumption Information
-                    insert_query = insert(consumption_table).values(BarrelPriceDollar=get_oil_price(), 
-                                                                TotalFuelPriceDollar=TotalFuelPrice_,
-                                                                TotalFuelVolumeGallons=TotalFuelVolumeGallons_,
-                                                                FlightID=new_flight_id
-                                                                )
-                    conn.execute(insert_query)
-                    conn.commit()
-                    conn.close()
-                    print(f"Data properly inserted!")
-        except ValueError as e:
-            print(f'Error in the simulator for flight {FlightCode_}: {e}')
-            continue
+            print('flightID_:', flightID_)
+            print('PlaneID_:', plane_code[0])
+            print('FlightCode_:', FlightCode_)
+
+            # Update Flight Table
+            FlightCode_ = FlightCode_
+            TimeDeparture_ = departure_time
+            TimeArrival_ = arrival_time
+            FlightTimeMinutes_ = flight_time
+            NbPassenger_ = passenger_number
+            PlaneID_ = plane_code[0]
+            with engine.connect() as conn:
+                update_flight = (
+                            update(flight_table).values(FlightCode=FlightCode_, 
+                                                                    TimeDeparture=TimeDeparture_,
+                                                                    TimeArrival=TimeArrival_,
+                                                                    FlightTimeMinutes=FlightTimeMinutes_,
+                                                                    NbPassenger=NbPassenger_,
+                                                                    PlaneID=PlaneID_
+                                                                    ).where(flight_table.c.FlightID == flightID_)
+                    )
+                conn.execute(update_flight)
+                print('ok')
+                update_plane_status = (
+                            update(plane_status_table).values(InFlight=True
+                                                                    ).where(plane_status_table.c.PlaneID == PlaneID_)
+                    )
+                conn.execute(update_plane_status)
+                print('ok')
+                # Insert Passenger Information
+                passenger_df['FlightID'] = flightID_  # Add FlightID in dataframe
+                passenger_df = passenger_df[['Name', 'Surname', 'PhoneNumber', 'Mail', 'Gender', 'TicketPriceDollar', 'PurchaseDate', 'FlightID']]  # Reorder the columns to match the specified order
+                passenger_df['PurchaseDate'] = pd.to_datetime(passenger_df['PurchaseDate'], format="%Y/%m/%d %H:%M:%S")
+                data = passenger_df.to_dict(orient='records')  # Convert DataFrame to a list of dictionaries
+                conn.execute(passenger_table.insert(), data)
+                
+                # Insert Consumption Information
+                insert_query = insert(consumption_table).values(BarrelPriceDollar=get_oil_price(), 
+                                                            TotalFuelPriceDollar=TotalFuelPrice_,
+                                                            TotalFuelVolumeGallons=TotalFuelVolumeGallons_,
+                                                            FlightID=flightID_
+                                                            )
+                conn.execute(insert_query)
+                conn.commit()
+                conn.close()
+        
+    except ValueError as e:
+        print(f'Error in the simulator for flight {FlightCode_}: {e}')
+        #continue

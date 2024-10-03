@@ -8,7 +8,7 @@ Topic : Python file to load start data in the database
 
 import json
 from datetime import datetime, timedelta
-
+import random
 from sqlalchemy import create_engine, insert, Table, Column, Float, String, Integer, DateTime, Boolean, MetaData, select
 import datetime
 import sys
@@ -28,12 +28,12 @@ def insert_airport_data(conn, airport_table, airport_data):
             Longitude_ = doc_[1][1]
             LandingPrice_ = doc_[1][2]
             AirportCountry_ = doc_[1][3]
-            stmt = insert(airport_table).values(AirportCode=AirportCode_, 
+            query = insert(airport_table).values(AirportCode=AirportCode_, 
                                                 Latitude=Latitude_, 
                                                 Longitude=Longitude_, 
                                                 LandingPrice=LandingPrice_, 
                                                 AirportCountry=AirportCountry_)
-            conn.execute(stmt)
+            conn.execute(query)
             conn.commit()
             
 # Function to insert data into Plane_Company table
@@ -43,8 +43,8 @@ def insert_plane_company_data(conn, company_table, plane_company_data):
             Name_ = doc_[0]
             Country_ = doc_[1]['country']
             IATACode_ = doc_[1]['iata_code']
-            stmt = insert(company_table).values(Name=Name_, Country=Country_, IATACode=IATACode_)
-            conn.execute(stmt)
+            query = insert(company_table).values(Name=Name_, Country=Country_, IATACode=IATACode_)
+            conn.execute(query)
             conn.commit()
 
 # Function to insert data into Plane table
@@ -75,7 +75,32 @@ def insert_plane_data(conn, company_table, plane_table, plane_data, airline_plan
                                                     CompanyID=CompanyID_)
                     conn.execute(insert_query)
                     conn.commit()
-                
+   
+def insert_plane_status(conn, plane_table, plane_status_table, airport_table, airport_data):
+    with conn.connect() as conn:
+        # Step 1: Fetch all PlaneIDs from the Plane table
+        select_query = select(plane_table)
+        result = conn.execute(select_query)
+
+        # Step 2: For each plane, insert a record into PlaneStatus with InFlight = 0
+        for plane in result:
+            # Select a random airport
+            random_airport = random.choice(list(airport_data.items()))
+            airport_code, _ = random_airport
+            
+            query_aiportID = (
+                    select(airport_table.c.AirportID)
+                    .select_from(airport_table)
+                    .where(airport_table.c.AirportCode == airport_code)
+                )
+            aiportID_ = conn.execute(query_aiportID).scalar()
+
+            plane_id = plane[0]  # Get the PlaneID
+            insert_query = insert(plane_status_table).values(InFlight=False, AirportID=aiportID_, PlaneID=plane_id)
+            conn.execute(insert_query)
+
+        # Commit the changes
+        conn.commit()
 
 # Main function
 def main():
@@ -121,13 +146,21 @@ def main():
         Column('CompanyID', Integer)
     )
 
+    # Define the 'Plane' table
+    plane_status_table = Table(
+        'Plane_Status', metadata,
+        Column('PlaneStatusID', Integer, primary_key=True, autoincrement=True),
+        Column('InFlight', Boolean),
+        Column('AirportID', Integer),
+        Column('PlaneID', Integer)
+    )
 
     # Connect to the database
     # Database connection configuration
     DATABASE_TYPE = 'mysql'
     DBAPI = 'mysql+mysqlconnector'  # Adjust based on your SQLAlchemy version
     ENDPOINT = 'localhost'
-    PORT = 3307
+    PORT = 3306
     USER = 'laurent'  # Replace with your actual MySQL username
     PASSWORD = '123456789'  # Replace with your actual MySQL password
     DATABASE = 'AIRFLIGHT_DB'
@@ -151,6 +184,8 @@ def main():
         insert_plane_company_data(engine, company_table, airline_companies)
         # Insert plane data in Plane Table
         insert_plane_data(engine, company_table, plane_table, plane_data, airline_plane_data)
+        # Insert Plane Status
+        insert_plane_status(engine, plane_table, plane_status_table, airport_table, airport_coordinates)
         print('Data properly inserted !')
     except Exception as e:
         print("Error inserting data:", str(e))
